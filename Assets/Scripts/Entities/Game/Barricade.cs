@@ -7,9 +7,10 @@ public class Barricade : MonoBehaviour
 {
     #region VARIABLES
 
-    [Header("--- Flag References")]
+    [Header("--- Barricade References")]
     public Collider collider;
     public NavMeshObstacle navMeshObstacle;
+    public MeshRenderer meshRenderer;
 
     private bool barricadeActive = true;
 
@@ -52,8 +53,10 @@ public class Barricade : MonoBehaviour
     private void EnableBarricade()
     {
         Debug.Log("Enabling Barricade");
-        collider.enabled = true;
+        GetComponent<Collider>().enabled = true;
         navMeshObstacle.enabled = true;
+        meshRenderer.enabled = true;
+        collider.enabled = true;
         barricadeActive = true;
 
         GameManager.onRoundSetup -= EnableBarricade;
@@ -63,8 +66,10 @@ public class Barricade : MonoBehaviour
     private void DropBarricade()
     {
         Debug.Log("Disabling Barricade");
-        collider.enabled = false;
+        GetComponent<Collider>().enabled = false;
         navMeshObstacle.enabled = false;
+        meshRenderer.enabled = false;
+        collider.enabled = false;
         barricadeActive = false;
 
         GameManager.onRoundPlaying -= DropBarricade;

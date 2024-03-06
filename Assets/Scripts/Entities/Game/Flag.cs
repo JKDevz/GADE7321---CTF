@@ -29,6 +29,9 @@ public class Flag : MonoBehaviour
     public delegate void OnFlagDrop(FlagType flagType);
     public static OnFlagDrop onFlagDrop;
 
+    public delegate void OnFlagReturned(FlagType flagType);
+    public static OnFlagReturned onFlagReturned;
+
     #endregion
 
     #region UNITY METHODS
@@ -44,9 +47,16 @@ public class Flag : MonoBehaviour
         if (other.tag == "Player")
         {
             Debug.Log("Collision");
-            if (other.TryGetComponent(out PlayerInventory inv) && inv.pickupFlag == flagType)
+            if (other.TryGetComponent(out PlayerInventory inv))
             {
-                FlagPickedUp(ref inv);
+                if (inv.pickupFlag == flagType)
+                {
+                    FlagPickedUp(ref inv);
+                }
+                else
+                {
+                    ResetPosition();
+                }
             }
         }
     }
@@ -65,6 +75,7 @@ public class Flag : MonoBehaviour
 
     public void ResetPosition()
     {
+        onFlagReturned?.Invoke(flagType);
         this.transform.position = flagSpawn.position;
         flagState = FlagState.Safe;
     }
