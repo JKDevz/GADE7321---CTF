@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int scoreToWin = 5;
     [SerializeField] private GameState gameState = GameState.RoundSetup;
 
-    [Header("--- Player References")]
     private static GameManager _instance;
 
     private int playerScore;

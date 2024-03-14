@@ -46,6 +46,9 @@ public class PlayerStats
     public float sprintCooldown;
     public float sprintTimer;
 
+    public float stunDuration;
+    public float meleeRange;
+
     public float stunTimer;
 
     public float stamina;

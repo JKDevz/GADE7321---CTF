@@ -14,6 +14,8 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] private PowerUp powerUpSlot;
     [SerializeField] private Flag flagSlot;
 
+    private GameObject powerUpObject;
+
     #endregion
 
     #region INPUT ACTIONS
@@ -30,14 +32,23 @@ public class PlayerInventory : MonoBehaviour
 
     #region METHODS
 
-    public void PickupItem(PowerUp powerUp)
+    public void PickupItem(PowerUp powerUp, GameObject prefab)
     {
         powerUpSlot = powerUp;
+        powerUpObject = prefab;
     }
 
     public void PickupItem(Flag flagType)
     {
         flagSlot = flagType;
+    }
+
+    public void UseItem()
+    {
+        if (powerUpSlot != PowerUp.Empty && powerUpObject != null)
+        {
+            Instantiate(powerUpObject, gameObject.transform.position, Quaternion.identity, transform);
+        }
     }
 
     public void DropFlag()

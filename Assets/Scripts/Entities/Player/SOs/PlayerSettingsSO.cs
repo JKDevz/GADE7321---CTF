@@ -16,10 +16,12 @@ public class PlayerSettingsSO : ScriptableObject
     public float stamina;
     public float staminaTickRegen;
     public float staminaTickDelay;
-    public float staminaRegenDelay;
     public float staminaTickCost;
-    [Space]
+
+    [Header("-- Player Attack Settings")]
     public float stunDuration;
+    public float meleeRange;
+    public LayerMask canDamage;
 
     [Header("-- Player Navmesh Settings")]
     public float angularSpeed;

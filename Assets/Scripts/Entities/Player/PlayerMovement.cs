@@ -106,18 +106,18 @@ public class PlayerMovement : MonoBehaviour
             Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y);
             float moveSpeed = player.playerStats.speed;
 
-            if (isSprintHeld && player.playerStats.stamina > 0)
+            if (isSprintHeld == true && player.playerStats.stamina > 0)
             {
                 moveSpeed += (moveSpeed * player.playerStats.sprintModifier);
                 player.playerStats.DrainStamina();
             }
 
-            if (isCarryingFlag)
+            if (isCarryingFlag == true)
             {
                 moveSpeed -= (moveSpeed * player.playerStats.flagCarryModifier);
             }
 
-            if (player.playerStats.isStunned)
+            if (player.playerStats.isStunned == true)
             {
                 moveSpeed = moveSpeed / 2;
             }
@@ -176,6 +176,9 @@ public class PlayerMovement : MonoBehaviour
         player.playerStats.stamina = player.playerSettings.stamina;
         player.playerStats.staminaTickDelay = player.playerSettings.staminaTickDelay;
         player.playerStats.staminaTickRegen = player.playerSettings.staminaTickRegen;
+
+        player.playerStats.stunDuration = player.playerSettings.stunDuration;
+        player.playerStats.meleeRange = player.playerSettings.meleeRange;
 
         agent.angularSpeed = player.playerSettings.angularSpeed;
         agent.autoBraking = player.playerSettings.autoBraking;

@@ -66,7 +66,10 @@ public class PlayerAttacking : MonoBehaviour
 
     public void UseItem()
     {
-
+        if (player.Inventory.HasItem())
+        {
+            
+        }
     }
 
     #endregion
@@ -84,7 +87,7 @@ public class PlayerAttacking : MonoBehaviour
         do//Perform the attack
         {
             //Get all colliders that are entities.
-            Collider[] hits = Physics.OverlapSphere(player.gameObject.transform.position, player.playerSettings.attackRange, damageable);
+            Collider[] hits = Physics.OverlapSphere(player.gameObject.transform.position, player.playerSettings.attackRange, player.playerSettings.canDamage);
             if (hits != null)//As long as there are colliders
             {
                 foreach(Collider hit in hits)//For every collider detected, try get their damage interface
