@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 47965555881443935}
+  - component: {fileID: 7771847467896601852}
   m_Layer: 0
   m_Name: Visuals
   m_TagString: Untagged
@@ -32,6 +33,27 @@ Transform:
   - {fileID: 5623390762464257631}
   m_Father: {fileID: 8780894820705087093}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &7771847467896601852
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3107361270610201315}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 51bd60617a5e16943b8a7fecdfb72130, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &4786956811584340896
 GameObject:
   m_ObjectHideFlags: 0
@@ -81,10 +103,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemType: 4
+  itemPrefab: {fileID: 0}
   meshFilter: {fileID: 3587614751870981907}
   meshRenderer: {fileID: 4633775285748984730}
   animator: {fileID: 1026352193258741845}
-  rb: {fileID: 0}
 --- !u!65 &4131708461039612670
 BoxCollider:
   m_ObjectHideFlags: 0
