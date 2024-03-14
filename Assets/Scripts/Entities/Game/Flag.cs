@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Flag : MonoBehaviour
 {
@@ -14,7 +15,9 @@ public class Flag : MonoBehaviour
     [Header("--- Flag Settings")]
     public FlagState flagState;
     public float flagDropLaunchStrength;
+    [Space]
     public Vector3 flagHoldOffset = new Vector3(0, 2f, 0);
+    public Vector3 flagSpawnOffset = new Vector3(0, 8f, 0);
 
     public GameObject flagObject { get; private set; }
     private Transform flagHolder;
@@ -46,7 +49,6 @@ public class Flag : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            Debug.Log("Collision");
             if (other.TryGetComponent(out PlayerInventory inv))
             {
                 if (inv.pickupFlag == flagType)
@@ -76,7 +78,7 @@ public class Flag : MonoBehaviour
     public void ResetPosition()
     {
         onFlagReturned?.Invoke(flagType);
-        this.transform.position = flagSpawn.position;
+        this.transform.position = flagSpawn.position + flagSpawnOffset;
         flagState = FlagState.Safe;
     }
 

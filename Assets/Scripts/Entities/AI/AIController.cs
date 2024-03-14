@@ -14,11 +14,12 @@ public class AIController : MonoBehaviour
 
     [Header("--- AI Controller Settings")]
     public aiState state;
+    [HideInInspector] public aiState lastState;
 
     [Header("--- Exposed for testing Purposes")]
     public Transform target;
     public NavMeshAgent agent;
-    public PlayerInventory myInv;
+    public Player player;
 
     private StateAIAttack stateAttack;
     private StateAIPursue statePursue;
@@ -28,8 +29,6 @@ public class AIController : MonoBehaviour
     private GameState gameState;
 
     //Booleans for decision making
-    public bool playerHasFlag { get; protected set; }
-    public bool meHasFlag { get; protected set; }
     public bool playerHasItem { get; protected set; }
     public bool meHasItem { get; protected set; }
 
@@ -42,15 +41,13 @@ public class AIController : MonoBehaviour
     private void OnEnable()
     {
         GameManager.onGameStateChanged += UpdateGameState;
-        Flag.onFlagPickup += OnFlagPickup;
-        Flag.onFlagDrop += OnFlagDrop;
+        player.onDamage += OnDamage;
     }
 
     private void OnDisable()
     {
         GameManager.onGameStateChanged -= UpdateGameState;
-        Flag.onFlagPickup -= OnFlagPickup;
-        Flag.onFlagDrop -= OnFlagDrop;
+        player.onDamage -= OnDamage;
     }
 
     #endregion
@@ -59,29 +56,25 @@ public class AIController : MonoBehaviour
 
     private void Awake()
     {
+        if (TryGetComponent<Player>(out Player player))
+        {
+            this.player = player;
+        }
+
         stateAttack = new StateAIAttack(this);
         statePursue = new StateAIPursue(this);
         stateRetrieve = new StateAIRetrieve(this);
         stateSearch = new StateAISearch(this);
+
+        stateSearch.baseDangerRadius = player.playerSettings.baseDangerRadius;
 
         currentState = stateSearch;
     }
 
     private void Update()
     {
-        //switch (state)
-        //{
-        //    case aiState.Search:
-        //        stateSearch.HandleState(ref gameState);
-        //        break;
-        //    case aiState.Pursue:
-        //        break;
-        //    case aiState.Retrieve:
-        //        break;
-        //    case aiState.Attack:
-        //        break;
-        //}
-
+        ModifyStats();
+        LoadAnimations();
         currentState.HandleState(ref gameState);
     }
 
@@ -108,7 +101,10 @@ public class AIController : MonoBehaviour
                     currentState = stateAttack;
                     break;
             }
+            lastState = state;
             state = newState;
+
+            Debug.Log("Changed to " + newState.ToString() + " State!");
         }
     }
 
@@ -117,20 +113,113 @@ public class AIController : MonoBehaviour
         gameState = GameManager.Instance.GetGameState();
     }
 
-    private void OnFlagPickup(FlagType type)
+    public void CheckSpeed()
     {
-        if (type == FlagType.Blue)
+        agent.speed = player.playerSettings.speed;
+
+        if (player.playerStats.isSprinting && player.playerStats.stamina > 0)
         {
-            playerHasFlag = true;
+            agent.speed += (agent.speed * player.playerStats.sprintModifier);
+        }
+
+        if (player.Inventory.HasFlag())
+        {
+            agent.speed -= (agent.speed * player.playerStats.flagCarryModifier);
         }
     }
 
-    private void OnFlagDrop(FlagType type)
+    public void TrySprint(int minStamina, int randMax, int rollWin)
     {
-        if (type == FlagType.Blue)
+        if (player.playerStats.stamina > 0 && Time.time > player.playerStats.sprintTimer)//IF I can try and sprint, do so AND I have enough stamina...lol
         {
-            playerHasFlag = false;
+            if (player.playerStats.stamina <= minStamina)//Do I have enough DESIRED stamina?
+            {
+                player.playerStats.isSprinting = false;//No? Stop Sprinting
+            }
+            else if (Random.Range(0, randMax) >= rollWin)//I have enough stamina, now lets give a random try to sprint
+            {
+                player.playerStats.isSprinting = true;//Start sprinting
+                ResetSprintCooldown();//Reset the wait before I can try again
+            }
+            else
+            {
+                player.playerStats.isSprinting = false;//Stop sprinting
+            }
         }
+        else
+        {
+            player.playerStats.isSprinting = false;//Stop sprinting
+        }
+    }
+
+    private void OnDamage()
+    {
+        if (!player.playerStats.isStunned)//IF the player is not stunned, stun them
+        {
+            StartCoroutine(Stunned());
+        }
+        else//IF the player is already stunned, reset the stun duration
+        {
+            player.playerStats.stunTimer = Time.time + player.playerSettings.stunDuration;
+        }
+
+        //IF the player is holding their flag, drop it
+        if (player.Inventory.HasFlag())
+        {
+            player.Inventory.DropFlag();
+        }
+    }
+
+    private void LoadAnimations()
+    {
+        if (agent.velocity.magnitude > 1)
+        {
+            player.playerStats.isTryWalk = true;
+        }
+        else
+        {
+            player.playerStats.isTryWalk = true;
+        }
+    }
+
+    private IEnumerator Stunned()
+    {
+        player.playerStats.stunTimer = Time.time + player.playerSettings.stunDuration;
+        player.playerStats.isStunned = true;
+        yield return new WaitUntil(() => Time.time > player.playerStats.stunTimer);
+        player.playerStats.isStunned = false;
+    }
+
+    public void ResetSprintCooldown()
+    {
+        player.playerStats.sprintTimer = Time.time + player.playerStats.sprintCooldown;
+    }
+
+    private void ModifyStats()
+    {
+        float moveSpeed = player.playerStats.speed;
+
+        if (agent.velocity.magnitude > 0 && player.playerStats.isSprinting)
+        {
+            moveSpeed += (moveSpeed * player.playerStats.sprintModifier);
+            player.playerStats.DrainStamina();
+        }
+        else if (!player.playerStats.isSprinting || player.playerStats.isSprinting && agent.velocity.magnitude == 0)//IF the player is not sprinting WHILE moving OR standing still
+        {
+            player.playerStats.RegenStamina();//Regenerate stamina
+        }
+
+        if (player.Inventory.HasFlag())
+        {
+            moveSpeed -= (moveSpeed * player.playerStats.flagCarryModifier);
+        }
+
+        if (player.playerStats.isStunned)
+        {
+            moveSpeed = moveSpeed / 2;
+        }
+
+        agent.speed = moveSpeed;
     }
 
     #endregion

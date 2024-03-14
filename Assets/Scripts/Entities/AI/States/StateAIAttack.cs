@@ -5,9 +5,18 @@ using UnityEngine.AI;
 
 public class StateAIAttack : AIState, IState
 {
-    public void HandleState(ref GameState currentState)
+    public void HandleState(ref GameState gameState)
     {
-        throw new System.NotImplementedException();
+        if (!controller.player.Inventory.HasItem())
+        {
+            controller.player.Attacking.Attack();
+        }
+        else
+        {
+            controller.player.Attacking.UseItem();
+        }
+
+        controller.ChangeState(controller.lastState);
     }
 
     public StateAIAttack(AIController controller)

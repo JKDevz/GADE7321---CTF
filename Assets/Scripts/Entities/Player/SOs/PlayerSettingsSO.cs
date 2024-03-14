@@ -10,6 +10,16 @@ public class PlayerSettingsSO : ScriptableObject
     public float sprintModifier;
     public float flagCarryModifier;
     public float acceleration;
+    [Space]
+    public float attackRange;
+    [Space]
+    public float stamina;
+    public float staminaTickRegen;
+    public float staminaTickDelay;
+    public float staminaRegenDelay;
+    public float staminaTickCost;
+    [Space]
+    public float stunDuration;
 
     [Header("-- Player Navmesh Settings")]
     public float angularSpeed;
@@ -19,4 +29,7 @@ public class PlayerSettingsSO : ScriptableObject
     [Header("-- Navmesh Obstacle Avoidance")]
     public float radius;
     public float height;
+
+    [Header("-- AI Settings")]
+    public float baseDangerRadius;
 }

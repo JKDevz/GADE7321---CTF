@@ -21,7 +21,7 @@ public class StateAISearch : AIState, IState
     [Header("--- Base Check")]
     public float baseDangerRadius;
 
-    private Transform nearestFlag;
+    private Transform target;
 
     private float itemLookWait;
     private RaycastHit itemLookHit;
@@ -39,40 +39,57 @@ public class StateAISearch : AIState, IState
 
     #endregion
 
-    public void HandleState(ref GameState currentState)
+    public void HandleState(ref GameState gameState)
     {
-        FindFlag();//Find the nearest flag
-
         if (!isFindingItem)
         {
-            controller.agent.SetDestination(nearestFlag.position);//Pathfind to the nearest flag
+            FindFlag();
+        }
+        else
+        {
+            FindItem();
         }
 
-        if (controller.meHasFlag && !controller.playerHasFlag)//If I have my flag AND the player doesn't have theirs -> Enter Retrieve State
+        controller.TrySprint(50, 10, 4);
+        //controller.CheckSpeed();
+
+        controller.agent.SetDestination(target.position);//Pathfind to the nearest flag
+
+        if (FlagManager.Instance.aiHasFlag && !FlagManager.Instance.playerHasFlag)//If I have my flag AND the player doesn't have theirs -> Enter Retrieve State
         {
+            isFindingItem = false;
             controller.ChangeState(aiState.Retrieve);
         }
-        else if (controller.playerHasFlag && !controller.meHasFlag)//If the player has their flag AND I don't have mine -> Enter Pursue State
-        {
-            controller.ChangeState(aiState.Pursue);
-        }
-        else if (controller.playerHasFlag && controller.meHasFlag!)//If both I and the player have our flags
+        else if (FlagManager.Instance.aiHasFlag && FlagManager.Instance.playerHasFlag)//If both I and the player have our flags
         {
             //If I am closer to my base than the player
             //THEN try and score -> Enter Retrieve State
             if (Vector3.Distance(controller.transform.position, ScoreZoneManager.Instance.redScoreZone.transform.position) 
                 > Vector3.Distance(PlayerManager.Instance.GetPlayer().transform.position, ScoreZoneManager.Instance.blueScoreZone.transform.position))
             {
+                isFindingItem = false;
                 controller.ChangeState(aiState.Retrieve);
             }
             else //ELSE if the player is closer to their base -> Enter Pursue State
             {
+                isFindingItem = false;
                 controller.ChangeState(aiState.Pursue);
             }
         }
-
-        FindItem();
-
+        else if (Vector3.Distance(PlayerManager.Instance.GetPlayer().transform.position, controller.transform.position) 
+            <= controller.player.playerSettings.attackRange)//IF player is close, attack them
+        {
+            controller.ChangeState(aiState.Attack);
+        }
+        else if (controller.player.Inventory.HasItem())
+        {
+            isFindingItem = false;
+        }
+        else if (!FlagManager.Instance.aiHasFlag && FlagManager.Instance.playerHasFlag)//If the player has their flag AND I don't have mine -> Enter Pursue State
+        {
+            isFindingItem = false;
+            controller.ChangeState(aiState.Pursue);
+        }
     }
 
     public void EnterState()
@@ -90,19 +107,19 @@ public class StateAISearch : AIState, IState
             if (Vector3.Distance(controller.agent.transform.position, FlagManager.Instance.blueFlag.transform.position) 
                 < Vector3.Distance(controller.agent.transform.position, FlagManager.Instance.redFlag.transform.position))
             {
-                nearestFlag = FlagManager.Instance.blueFlag.transform;
+                target = FlagManager.Instance.blueFlag.transform;
             }
         }
         else
         {
-            nearestFlag = FlagManager.Instance.redFlag.transform;
+            target = FlagManager.Instance.redFlag.transform;
         }
     }
 
     private void FindItem()
     {
         //If I can look for a power-up AND I do not have a power-up
-        if (Time.time > itemLookWait && !controller.myInv.HasItem())
+        if (!controller.player.Inventory.HasItem() && Time.time > itemLookWait)
         {
             ResetItemLookTimer();
             //IS the player close to my base?
@@ -120,7 +137,7 @@ public class StateAISearch : AIState, IState
                     //THEN do a random roll to see if I want to go for it
                     if (Random.Range(0, itemSearchChance.y) <= itemSearchChance.x)
                     {
-                        //Set the Power-Up I found to my Target
+                        target = itemLookHit.collider.transform; 
                         isFindingItem = true;//Yes I AM looking for a power-up thank you :D
                     }
                 }

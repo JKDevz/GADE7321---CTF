@@ -5,7 +5,7 @@ using UnityEngine;
 public interface IState
 {
 
-    public abstract void HandleState(ref GameState currentState);
+    public abstract void HandleState(ref GameState gameState);
 
     public abstract void EnterState();
 
