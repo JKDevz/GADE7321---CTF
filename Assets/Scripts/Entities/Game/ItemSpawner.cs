@@ -17,8 +17,12 @@ public class ItemSpawner : MonoBehaviour
 
     public void SpawnItem(GameObject item)
     {
-        item = Instantiate(item, gameObject.transform.position, Quaternion.identity, null);
-        hasItem = true;
+        GameObject obj = Instantiate(item, gameObject.transform.position, Quaternion.identity, null);
+        if (obj.TryGetComponent<Item>(out Item i))
+        {
+            this.item = i;
+            hasItem = true;
+        }
     }
 
     public bool HasItem()

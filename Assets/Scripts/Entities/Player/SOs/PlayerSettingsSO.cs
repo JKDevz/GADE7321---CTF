@@ -7,16 +7,8 @@ public class PlayerSettingsSO : ScriptableObject
 {
     [Header("-- Player Movement Settings")]
     public float speed;
-    public float sprintModifier;
     public float flagCarryModifier;
     public float acceleration;
-    [Space]
-    public float attackRange;
-    [Space]
-    public float stamina;
-    public float staminaTickRegen;
-    public float staminaTickDelay;
-    public float staminaTickCost;
 
     [Header("-- Player Attack Settings")]
     public float stunDuration;

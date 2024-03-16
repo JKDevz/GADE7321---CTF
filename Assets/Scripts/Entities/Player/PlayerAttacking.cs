@@ -11,10 +11,7 @@ public class PlayerAttacking : MonoBehaviour
     public Player player;
 
     [Header("--- Attack Settings")]
-    public float damage;
-    public float impact;
-    [Space]
-    public LayerMask damageable;
+    public LayerMask damageMask;
 
     [Header("--- Item Settings")]
     public Vector3 castOffset = new Vector3(0f, 0f, 0f);
@@ -49,6 +46,11 @@ public class PlayerAttacking : MonoBehaviour
         {
             this.player = player;
         }
+
+        meleeRange = this.player.playerStats.meleeRange;
+        itemRange = this.player.playerStats.meleeRange;
+        damageMask = this.player.playerSettings.canDamage;
+
     }
 
     #endregion
@@ -59,6 +61,7 @@ public class PlayerAttacking : MonoBehaviour
     {
         if (!player.playerStats.isAttacking)
         {
+            meleeRange = player.playerStats.meleeRange;
             player.playerStats.isAttacking = true;//Stop the player from performing an attack
             StartCoroutine(DoAttack());
         }
@@ -79,6 +82,7 @@ public class PlayerAttacking : MonoBehaviour
     private IEnumerator DoAttack()
     {
         player.playerStats.isAttacking = true;//Stop the player from performing an attack
+        player.Animator.PlayAttack();
 
         yield return new WaitForSeconds(attackTiming.startLag);//Wait for the startup lag
 
@@ -87,18 +91,17 @@ public class PlayerAttacking : MonoBehaviour
         do//Perform the attack
         {
             //Get all colliders that are entities.
-            Collider[] hits = Physics.OverlapSphere(player.gameObject.transform.position, player.playerSettings.attackRange, player.playerSettings.canDamage);
+            Collider[] hits = Physics.OverlapSphere(player.gameObject.transform.position, meleeRange, damageMask);
             if (hits != null)//As long as there are colliders
             {
                 foreach(Collider hit in hits)//For every collider detected, try get their damage interface
                 {
-                    if (hit == player.boxCollider)//IF I have hit myself, ignore me
+                    if (hit != player.boxCollider)//IF I have hit myself, ignore me
                     {
-                        break;
-                    }
-                    else if (TryGetComponent(out IDamageable victim))
-                    {
-                        victim.Damage();//Damage the entity
+                        if (hit.TryGetComponent(out IDamageable victim))
+                        {
+                            victim.Damage();//Damage the entity
+                        }
                     }
                 }
             }

@@ -12,17 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8cda90e40bd66b49923c38bf1cc598f, type: 3}
   m_Name: PlayerSettings
   m_EditorClassIdentifier: 
-  speed: 4
+  speed: 5
   sprintModifier: 0.5
   flagCarryModifier: 0.3
   acceleration: 25
-  attackRange: 2
-  stamina: 100
-  staminaTickRegen: 4
-  staminaTickDelay: 1
-  staminaRegenDelay: 0
-  staminaTickCost: 5
   stunDuration: 2
+  meleeRange: 2
+  canDamage:
+    serializedVersion: 2
+    m_Bits: 64
   angularSpeed: 720
   stoppingDistance: 0
   autoBraking: 1

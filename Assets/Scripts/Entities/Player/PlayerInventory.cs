@@ -11,7 +11,7 @@ public class PlayerInventory : MonoBehaviour
     public FlagType pickupFlag;
 
     [Header(">>> Exposed for testing Only")]
-    [SerializeField] private PowerUp powerUpSlot;
+    [SerializeField] private ItemType powerUpSlot;
     [SerializeField] private Flag flagSlot;
 
     private GameObject powerUpObject;
@@ -28,11 +28,19 @@ public class PlayerInventory : MonoBehaviour
         }
     }
 
+    public void OnUseItem(InputAction.CallbackContext ctx)
+    {
+        if (ctx.started)
+        {
+            UseItem();
+        }
+    }
+
     #endregion
 
     #region METHODS
 
-    public void PickupItem(PowerUp powerUp, GameObject prefab)
+    public void PickupItem(ItemType powerUp, GameObject prefab)
     {
         powerUpSlot = powerUp;
         powerUpObject = prefab;
@@ -45,9 +53,11 @@ public class PlayerInventory : MonoBehaviour
 
     public void UseItem()
     {
-        if (powerUpSlot != PowerUp.Empty && powerUpObject != null)
+        if (HasItem() && powerUpObject != null)
         {
             Instantiate(powerUpObject, gameObject.transform.position, Quaternion.identity, transform);
+            powerUpObject = null;
+            powerUpSlot = ItemType.Empty;
         }
     }
 
@@ -78,7 +88,7 @@ public class PlayerInventory : MonoBehaviour
 
     public bool HasItem()
     {
-        if (powerUpSlot != PowerUp.Empty)
+        if (powerUpSlot != ItemType.Empty && powerUpObject != null)
         {
             return true;
         }
@@ -92,7 +102,7 @@ public class PlayerInventory : MonoBehaviour
 
 }
 
-public enum PowerUp
+public enum ItemType
 {
     Empty,
     Log,

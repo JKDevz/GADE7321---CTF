@@ -41,17 +41,13 @@ public class StateAISearch : AIState, IState
 
     public void HandleState(ref GameState gameState)
     {
+
         if (!isFindingItem)
-        {
-            FindFlag();
-        }
-        else
         {
             FindItem();
         }
 
-        controller.TrySprint(50, 10, 4);
-        //controller.CheckSpeed();
+        FindFlag();
 
         controller.agent.SetDestination(target.position);//Pathfind to the nearest flag
 
@@ -76,11 +72,6 @@ public class StateAISearch : AIState, IState
                 controller.ChangeState(aiState.Pursue);
             }
         }
-        else if (Vector3.Distance(PlayerManager.Instance.GetPlayer().transform.position, controller.transform.position) 
-            <= controller.player.playerSettings.attackRange)//IF player is close, attack them
-        {
-            controller.ChangeState(aiState.Attack);
-        }
         else if (controller.player.Inventory.HasItem())
         {
             isFindingItem = false;
@@ -89,6 +80,10 @@ public class StateAISearch : AIState, IState
         {
             isFindingItem = false;
             controller.ChangeState(aiState.Pursue);
+        }
+        else if (Vector3.Distance(PlayerManager.Instance.GetPlayer().transform.position, controller.transform.position) <= controller.player.playerStats.meleeRange)
+        {
+            controller.ChangeState(aiState.Attack);
         }
     }
 

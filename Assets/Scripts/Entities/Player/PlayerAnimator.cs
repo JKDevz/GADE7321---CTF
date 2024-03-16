@@ -17,7 +17,6 @@ public class PlayerAnimator : MonoBehaviour
 
     private void Awake()
     {
-        this.player.playerStats = new PlayerStats();
         if (TryGetComponent<Player>(out Player player))
         {
             this.player = player;
@@ -29,6 +28,11 @@ public class PlayerAnimator : MonoBehaviour
         animator.SetBool("isWalking", player.playerStats.isTryWalk);
         animator.SetBool("isSprinting", player.playerStats.isSprinting);
         animator.SetBool("isAttacking", player.playerStats.isAttacking);
+    }
+
+    public void PlayAttack()
+    {
+        animator.SetTrigger("Attack");
     }
 
     #endregion

@@ -50,52 +50,6 @@ public class PlayerStats
     public float meleeRange;
 
     public float stunTimer;
-
-    public float stamina;
-    public float staminaTickRegen;
-    public float staminaTickDelay;
-    public float staminaTickCost;
-
-    private float maxStamina;
-
-    private bool staminaDraining;
-    private float staminaTick;
-
-    public void DrainStamina()
-    {
-        staminaDraining = true;
-        if (Time.time > staminaTick)
-        {
-            if (stamina > 0)
-            {
-                stamina -= staminaTickCost;
-            }
-            else
-            {
-                stamina = maxStamina;
-            }
-
-            stamina = Time.time + staminaTickDelay;
-        }
-    }
-
-    public void RegenStamina()
-    {
-        staminaDraining = false;
-        if (Time.time > staminaTick)
-        {
-            if (stamina <= maxStamina)
-            {
-                stamina += staminaTickRegen;
-            }
-            else
-            {
-                stamina = 0;
-            }
-
-            stamina = Time.time + staminaTickDelay;
-        }
-    }
 }
 
 public enum Stamina

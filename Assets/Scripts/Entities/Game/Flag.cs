@@ -92,6 +92,7 @@ public class Flag : MonoBehaviour
 
     public void DropFlag()
     {
+        onFlagDrop?.Invoke(flagType);
         flagHolder = null;
         rb.velocity = Vector3.zero;
         rb.AddForce(Vector3.up * flagDropLaunchStrength, ForceMode.Impulse);

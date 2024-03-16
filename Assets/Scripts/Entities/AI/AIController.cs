@@ -61,6 +61,8 @@ public class AIController : MonoBehaviour
             this.player = player;
         }
 
+        LoadValues();
+
         stateAttack = new StateAIAttack(this);
         statePursue = new StateAIPursue(this);
         stateRetrieve = new StateAIRetrieve(this);
@@ -86,6 +88,9 @@ public class AIController : MonoBehaviour
     {
         if (newState != state)
         {
+            lastState = state;
+            state = newState;
+
             switch (state)
             {
                 case aiState.Search:
@@ -101,55 +106,13 @@ public class AIController : MonoBehaviour
                     currentState = stateAttack;
                     break;
             }
-            lastState = state;
-            state = newState;
-
-            Debug.Log("Changed to " + newState.ToString() + " State!");
         }
+        Debug.Log("Changed to " + newState.ToString() + " State. Last State is now: " + lastState.ToString());
     }
 
     private void UpdateGameState()
     {
         gameState = GameManager.Instance.GetGameState();
-    }
-
-    public void CheckSpeed()
-    {
-        agent.speed = player.playerSettings.speed;
-
-        if (player.playerStats.isSprinting && player.playerStats.stamina > 0)
-        {
-            agent.speed += (agent.speed * player.playerStats.sprintModifier);
-        }
-
-        if (player.Inventory.HasFlag())
-        {
-            agent.speed -= (agent.speed * player.playerStats.flagCarryModifier);
-        }
-    }
-
-    public void TrySprint(int minStamina, int randMax, int rollWin)
-    {
-        if (player.playerStats.stamina > 0 && Time.time > player.playerStats.sprintTimer)//IF I can try and sprint, do so AND I have enough stamina...lol
-        {
-            if (player.playerStats.stamina <= minStamina)//Do I have enough DESIRED stamina?
-            {
-                player.playerStats.isSprinting = false;//No? Stop Sprinting
-            }
-            else if (Random.Range(0, randMax) >= rollWin)//I have enough stamina, now lets give a random try to sprint
-            {
-                player.playerStats.isSprinting = true;//Start sprinting
-                ResetSprintCooldown();//Reset the wait before I can try again
-            }
-            else
-            {
-                player.playerStats.isSprinting = false;//Stop sprinting
-            }
-        }
-        else
-        {
-            player.playerStats.isSprinting = false;//Stop sprinting
-        }
     }
 
     private void OnDamage()
@@ -199,16 +162,6 @@ public class AIController : MonoBehaviour
     {
         float moveSpeed = player.playerStats.speed;
 
-        if (agent.velocity.magnitude > 0 && player.playerStats.isSprinting)
-        {
-            moveSpeed += (moveSpeed * player.playerStats.sprintModifier);
-            player.playerStats.DrainStamina();
-        }
-        else if (!player.playerStats.isSprinting || player.playerStats.isSprinting && agent.velocity.magnitude == 0)//IF the player is not sprinting WHILE moving OR standing still
-        {
-            player.playerStats.RegenStamina();//Regenerate stamina
-        }
-
         if (player.Inventory.HasFlag())
         {
             moveSpeed -= (moveSpeed * player.playerStats.flagCarryModifier);
@@ -220,6 +173,24 @@ public class AIController : MonoBehaviour
         }
 
         agent.speed = moveSpeed;
+    }
+
+    public void LoadValues()
+    {
+        player.playerStats = new PlayerStats();
+
+        player.playerStats.speed = player.playerSettings.speed;
+        player.playerStats.flagCarryModifier = player.playerSettings.flagCarryModifier;
+
+        player.playerStats.stunDuration = player.playerSettings.stunDuration;
+        player.playerStats.meleeRange = player.playerSettings.meleeRange;
+
+        agent.angularSpeed = player.playerSettings.angularSpeed;
+        agent.autoBraking = player.playerSettings.autoBraking;
+        agent.acceleration = player.playerSettings.acceleration;
+
+        agent.radius = player.playerSettings.radius;
+        agent.height = player.playerSettings.height;
     }
 
     #endregion

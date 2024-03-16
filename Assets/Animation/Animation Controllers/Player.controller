@@ -37,7 +37,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Running
-  m_Speed: 1
+  m_Speed: 2
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 8905561648383921733}
@@ -602,11 +602,17 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 0}
+  - m_Name: Attack
+    m_Type: 9
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 0}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Body
     m_StateMachine: {fileID: -983079332536455578}
-    m_Mask: {fileID: 0}
+    m_Mask: {fileID: 31900000, guid: b0ac1db24493e04409ae54a9364f7105, type: 2}
     m_Motions: []
     m_Behaviours: []
     m_BlendingMode: 0
@@ -670,7 +676,7 @@ AnimatorController:
   - serializedVersion: 5
     m_Name: Head
     m_StateMachine: {fileID: 1217543855267647670}
-    m_Mask: {fileID: 0}
+    m_Mask: {fileID: 31900000, guid: 9bc43b5a50c4bc34fb87160ed97302b0, type: 2}
     m_Motions:
     - serializedVersion: 2
       m_State: {fileID: -8890169477679979750}
@@ -698,7 +704,7 @@ AnimatorController:
   - serializedVersion: 5
     m_Name: Windup
     m_StateMachine: {fileID: -7646830706937079119}
-    m_Mask: {fileID: 0}
+    m_Mask: {fileID: 31900000, guid: b8fa2e07fbdfd8344927acf4a6eb10b7, type: 2}
     m_Motions:
     - serializedVersion: 2
       m_State: {fileID: -2930079692820010909}
@@ -763,7 +769,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Attack
-  m_Speed: 2
+  m_Speed: 4
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 6746439586086714938}
@@ -778,7 +784,8 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 0}
+  m_Motion: {fileID: -6284164228317097983, guid: 80d489e87cdf83c46850869359446618,
+    type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -1016,7 +1023,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: Attack
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1512870610917157603}
@@ -1024,7 +1031,7 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 0.15
   m_TransitionOffset: 0
   m_ExitTime: 0.75
   m_HasExitTime: 0

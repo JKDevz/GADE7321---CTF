@@ -106,12 +106,6 @@ public class PlayerMovement : MonoBehaviour
             Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y);
             float moveSpeed = player.playerStats.speed;
 
-            if (isSprintHeld == true && player.playerStats.stamina > 0)
-            {
-                moveSpeed += (moveSpeed * player.playerStats.sprintModifier);
-                player.playerStats.DrainStamina();
-            }
-
             if (isCarryingFlag == true)
             {
                 moveSpeed -= (moveSpeed * player.playerStats.flagCarryModifier);
@@ -119,16 +113,11 @@ public class PlayerMovement : MonoBehaviour
 
             if (player.playerStats.isStunned == true)
             {
-                moveSpeed = moveSpeed / 2;
+                moveSpeed /= 2;
             }
 
             agent.velocity = move * moveSpeed;
-        }
-        
-        //IF the player is not sprinting WHILE moving OR standing still
-        if (!isSprintHeld || isSprintHeld && moveInput.magnitude == 0)
-        {
-            player.playerStats.RegenStamina();//Regenerate stamina
+
         }
     }
 
@@ -168,14 +157,8 @@ public class PlayerMovement : MonoBehaviour
     {
         player.playerStats = new PlayerStats();
 
-        player.playerStats.stamina = player.playerSettings.stamina;
         player.playerStats.speed = player.playerSettings.speed;
-        player.playerStats.sprintModifier = player.playerSettings.sprintModifier;
         player.playerStats.flagCarryModifier = player.playerSettings.flagCarryModifier;
-
-        player.playerStats.stamina = player.playerSettings.stamina;
-        player.playerStats.staminaTickDelay = player.playerSettings.staminaTickDelay;
-        player.playerStats.staminaTickRegen = player.playerSettings.staminaTickRegen;
 
         player.playerStats.stunDuration = player.playerSettings.stunDuration;
         player.playerStats.meleeRange = player.playerSettings.meleeRange;

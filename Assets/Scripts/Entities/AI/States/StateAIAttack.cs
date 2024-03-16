@@ -16,7 +16,7 @@ public class StateAIAttack : AIState, IState
             controller.player.Attacking.UseItem();
         }
 
-        controller.ChangeState(controller.lastState);
+        controller.ChangeState(aiState.Search);
     }
 
     public StateAIAttack(AIController controller)

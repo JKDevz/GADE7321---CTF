@@ -10,6 +10,7 @@ public class ItemManager : MonoBehaviour
     public Vector2 spawnRandomness;
     [Space]
     public ItemSpawner[] itemSpawners;
+    public GameObject[] itemList;
 
     private float spawnTimer;
 
@@ -44,7 +45,12 @@ public class ItemManager : MonoBehaviour
 
     private IEnumerator Start()
     {
-        yield return null;
+        while (true)
+        {
+            yield return new WaitForSeconds(Random.Range(spawnRandomness.x, spawnRandomness.y));
+            SpawnItem();
+            yield return null;
+        }
     }
     #endregion
 
@@ -52,7 +58,22 @@ public class ItemManager : MonoBehaviour
 
     public void SpawnItem()
     {
+        int i = 0;
+        int counter = 0;
 
+        do
+        {
+            i = Random.Range(0, itemSpawners.Length);
+            counter++;
+
+            if (counter > itemSpawners.Length)//Stop if the random tries are equal to the number of spawners
+            {
+                return;
+            }
+        }
+        while (itemSpawners[i].HasItem());
+
+        itemSpawners[i].SpawnItem(itemList[Random.Range(0, itemSpawners.Length)]);
     }
 
     #endregion
