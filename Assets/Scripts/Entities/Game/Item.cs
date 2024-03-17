@@ -19,10 +19,21 @@ public class Item : MonoBehaviour
     public delegate void OnPickedUp();
     public OnPickedUp onPickedUp;
 
-    public Item(Mesh mesh, ItemType type)
+
+    public Item()
     {
-        itemType = type;
-        meshFilter.mesh = mesh;
+
+    }
+
+    public Item(ItemType type, GameObject prefab, MeshFilter meshFilter, MeshRenderer meshRenderer, Animator animator, Collider boxCollider, Vector3 offset, float pickupTime)
+    {
+        this.itemType = type;
+        this.meshFilter = meshFilter;
+        this.meshRenderer = meshRenderer;
+        this.animator = animator;
+        this.boxCollider = boxCollider;
+        this.pickupOffset = offset;
+        this.pickupTime = pickupTime;
     }
 
     private void OnDisable()
@@ -53,7 +64,7 @@ public class Item : MonoBehaviour
     {
         if (eventCollider.TryGetComponent<PlayerInventory>(out PlayerInventory inv))
         {
-            inv.PickupItem(itemType, itemPrefab);
+            inv.PickupItem(itemType, this);
         }
     }
 

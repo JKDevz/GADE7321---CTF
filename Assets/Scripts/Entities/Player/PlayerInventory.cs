@@ -13,8 +13,7 @@ public class PlayerInventory : MonoBehaviour
     [Header(">>> Exposed for testing Only")]
     [SerializeField] private ItemType powerUpSlot;
     [SerializeField] private Flag flagSlot;
-
-    private GameObject powerUpObject;
+    [SerializeField] private Item itemRef;
 
     #endregion
 
@@ -40,10 +39,10 @@ public class PlayerInventory : MonoBehaviour
 
     #region METHODS
 
-    public void PickupItem(ItemType powerUp, GameObject prefab)
+    public void PickupItem(ItemType type, Item item)
     {
-        powerUpSlot = powerUp;
-        powerUpObject = prefab;
+        powerUpSlot = type;
+        itemRef = new Item(item.itemType, item.itemPrefab, item.meshFilter, item.meshRenderer, item.animator, item.boxCollider, item.pickupOffset, item.pickupTime);
     }
 
     public void PickupItem(Flag flagType)
@@ -53,11 +52,11 @@ public class PlayerInventory : MonoBehaviour
 
     public void UseItem()
     {
-        if (HasItem() && powerUpObject != null)
+        if (HasItem() && itemRef != null)
         {
-            Instantiate(powerUpObject, gameObject.transform.position, Quaternion.identity, transform);
-            powerUpObject = null;
+            Instantiate(itemRef.itemPrefab, gameObject.transform.position, Quaternion.identity, transform);
             powerUpSlot = ItemType.Empty;
+            itemRef = null;
         }
     }
 
@@ -88,7 +87,7 @@ public class PlayerInventory : MonoBehaviour
 
     public bool HasItem()
     {
-        if (powerUpSlot != ItemType.Empty && powerUpObject != null)
+        if (powerUpSlot != ItemType.Empty && itemRef != null)
         {
             return true;
         }

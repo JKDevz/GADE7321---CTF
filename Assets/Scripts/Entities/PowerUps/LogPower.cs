@@ -9,6 +9,7 @@ public class LogPower : MonoBehaviour, IPowerUp
     public int logCount;
     [Range(1f, 5f)]
     public float rollWidth;
+    public Vector3 offset;
 
     [Header("--- Log Power References")]
     public GameObject rollingLog;
@@ -28,10 +29,10 @@ public class LogPower : MonoBehaviour, IPowerUp
 
     public void Deploy()
     {
-        Transform shootPos = this.transform;
+        Vector3 shootPos = transform.position + offset;
 
-        Vector3 start = shootPos.position + Vector3.left * rollWidth/2;
-        Vector3 end = shootPos.position + Vector3.right * rollWidth / 2;
+        Vector3 start = shootPos + Vector3.left * rollWidth/2;
+        Vector3 end = shootPos + Vector3.right * rollWidth / 2;
 
         for (int i = 0; i < logCount; i++)
         {

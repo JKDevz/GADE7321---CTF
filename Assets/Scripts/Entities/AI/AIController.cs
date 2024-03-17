@@ -107,7 +107,6 @@ public class AIController : MonoBehaviour
                     break;
             }
         }
-        Debug.Log("Changed to " + newState.ToString() + " State. Last State is now: " + lastState.ToString());
     }
 
     private void UpdateGameState()

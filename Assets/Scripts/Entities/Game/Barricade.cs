@@ -8,7 +8,7 @@ public class Barricade : MonoBehaviour
     #region VARIABLES
 
     [Header("--- Barricade References")]
-    public Collider collider;
+    public Collider boxCollider;
     public NavMeshObstacle navMeshObstacle;
     public MeshRenderer meshRenderer;
 
@@ -38,7 +38,7 @@ public class Barricade : MonoBehaviour
     {
         if (this.TryGetComponent<Collider>(out Collider cmp))
         {
-            collider = cmp;
+            boxCollider = cmp;
         }
         if (this.TryGetComponent<NavMeshObstacle>(out NavMeshObstacle obs))
         {
@@ -56,7 +56,7 @@ public class Barricade : MonoBehaviour
         GetComponent<Collider>().enabled = true;
         navMeshObstacle.enabled = true;
         meshRenderer.enabled = true;
-        collider.enabled = true;
+        boxCollider.enabled = true;
         barricadeActive = true;
 
         GameManager.onRoundSetup -= EnableBarricade;
@@ -69,7 +69,7 @@ public class Barricade : MonoBehaviour
         GetComponent<Collider>().enabled = false;
         navMeshObstacle.enabled = false;
         meshRenderer.enabled = false;
-        collider.enabled = false;
+        boxCollider.enabled = false;
         barricadeActive = false;
 
         GameManager.onRoundPlaying -= DropBarricade;

@@ -32,6 +32,7 @@ public class ItemManager : MonoBehaviour
                 {
                     GameObject singleton = new GameObject("ItemManager");
                     _instance = singleton.AddComponent<ItemManager>();
+                    
                 }
             }
             return _instance;
@@ -63,17 +64,20 @@ public class ItemManager : MonoBehaviour
 
         do
         {
-            i = Random.Range(0, itemSpawners.Length);
-            counter++;
-
-            if (counter > itemSpawners.Length)//Stop if the random tries are equal to the number of spawners
+            i = Random.Range(0, itemSpawners.Length - 1);
+            if (counter > itemSpawners.Length)
             {
                 return;
+            }
+            else
+            {
+                counter++;
             }
         }
         while (itemSpawners[i].HasItem());
 
-        itemSpawners[i].SpawnItem(itemList[Random.Range(0, itemSpawners.Length)]);
+        itemSpawners[i].SpawnItem(itemList[Random.Range(0, itemList.Length - 1)]);
+
     }
 
     #endregion

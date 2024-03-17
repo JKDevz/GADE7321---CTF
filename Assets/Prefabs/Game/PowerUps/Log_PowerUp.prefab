@@ -93,3 +93,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   logCount: 5
   rollWidth: 2.5
+  offset: {x: 0, y: 2, z: 1}
+  rollingLog: {fileID: 3472784951037576920, guid: e603006207972534ca9b2803239a70b6,
+    type: 3}

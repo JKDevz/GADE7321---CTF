@@ -24,15 +24,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Sprint",
-                    "type": "Button",
-                    "id": "142feb6e-64f7-4c68-a22a-aeba07d60e6a",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Use Power Up",
                     "type": "Button",
                     "id": "a8766721-a205-420e-8bb4-afe5cc646a88",
@@ -120,22 +111,22 @@
                 },
                 {
                     "name": "",
-                    "id": "6b6f4376-ff1b-46e6-8f8f-ddb603b292dd",
-                    "path": "<Keyboard>/leftShift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Sprint",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "53b0ff04-2bfe-437c-8570-a02d1265f0b6",
                     "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
+                    "action": "Use Power Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6b16d8b7-5abe-4986-a01e-ff6ada8a0e7b",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
                     "action": "Use Power Up",
                     "isComposite": false,
                     "isPartOfComposite": false
