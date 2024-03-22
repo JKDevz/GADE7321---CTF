@@ -1078,23 +1078,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   lastState: 0
+  itemUseCooldown: 2
+  itemUseCooldown_Noise: {x: 0, y: 10}
+  itemLookCooldown: 1
+  itemLookCooldown_Noise: {x: 0, y: 2}
+  itemLookRadius_Noise: {x: 0, y: 10}
+  itemSearchChance: {x: 1, y: 5}
+  SearchRadius: 20
   target: {fileID: 0}
   agent: {fileID: 355978030}
   player: {fileID: 355978037}
-  searchSettings:
-    itemLookCooldown: 2
-    itemLookCooldown_Noise: {x: 0, y: 3}
-    itemLookRadius_Noise: {x: 0, y: 10}
-    itemSearchChance: {x: 1, y: 5}
-    SearchRadius: 20
-    baseDangerRadius: 10
-  stateSearch:
-    itemLookCooldown: 1
-    itemLookCooldown_Noise: {x: 0, y: 1}
-    itemLookRadius_Noise: {x: 0, y: 5}
-    itemSearchChance: {x: 1, y: 5}
-    SearchRadius: 10
-    baseDangerRadius: 10
 --- !u!65 &355978033
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1930,7 +1923,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 152e537e5bf4a824f90beaaba75dcbef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnRandomness: {x: 0.5, y: 1}
+  spawnRandomness: {x: 2, y: 5}
   itemSpawners:
   - {fileID: 1000004176}
   - {fileID: 1068674965}

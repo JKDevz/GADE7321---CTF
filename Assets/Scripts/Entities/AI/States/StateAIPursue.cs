@@ -33,8 +33,9 @@ public class StateAIPursue : AIState, IState
             controller.ChangeState(aiState.Attack);
         }
 
-        if (controller.player.Inventory.HasItem())
+        if (controller.player.Inventory.HasItem() && Time.time > controller.itemUseWait)
         {
+            controller.ResetItemUseWait();
             controller.ChangeState(aiState.Attack);
         }
     }

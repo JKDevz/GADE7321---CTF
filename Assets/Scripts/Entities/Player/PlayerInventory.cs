@@ -15,6 +15,9 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] private Flag flagSlot;
     [SerializeField] private GameObject itemPrefab;
 
+    public delegate void OnItemPickup();
+    public OnItemPickup onItemPickup;
+
     #endregion
 
     #region INPUT ACTIONS
@@ -43,6 +46,7 @@ public class PlayerInventory : MonoBehaviour
     {
         powerUpSlot = type;
         itemPrefab = prefab;
+        onItemPickup?.Invoke();
         //itemPrefab = new Item(item.itemType, item.itemPrefab, item.meshFilter, item.meshRenderer, item.animator, item.boxCollider, item.pickupOffset, item.pickupTime);
     }
 

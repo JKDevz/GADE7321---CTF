@@ -8,19 +8,9 @@ public class StateAISearch : AIState, IState
 {
     #region VARIABLES
 
-    [Header("--- Search State Settings")]
-    public float itemLookCooldown;
-    public Vector2 itemLookCooldown_Noise;
-    private float itemLookRadius;
-    public Vector2 itemLookRadius_Noise;
-    public Vector2 itemSearchChance;//X = number needed AND less than; Y = max num
-    public float SearchRadius;
-
-    [Header("--- Check Radiuses")]
-    public float baseDangerRadius;
-
     private Transform target;
 
+    private float itemLookRadius;
     private float itemLookWait;
     private ItemSpawner targetSpawner;
 
@@ -92,9 +82,8 @@ public class StateAISearch : AIState, IState
             controller.ChangeState(aiState.Attack);
         }
 
-        if (controller.player.Inventory.HasItem())
+        if (controller.player.Inventory.HasItem() && Time.time > controller.itemUseWait)
         {
-            Debug.Log("using Item!");
             controller.ChangeState(aiState.Attack);
         }
     }
@@ -125,13 +114,14 @@ public class StateAISearch : AIState, IState
 
     private void FindItem()
     {
+        Debug.Log("Searching for Item");
         //If I can look for a power-up AND I do not have a power-up
         if (!controller.player.Inventory.HasItem() && Time.time > itemLookWait)
         {
             ResetItemLookTimer();
 
             //IS the player close to my base?
-            if (Vector3.Distance(PlayerManager.Instance.GetPlayer().transform.position, ScoreZoneManager.Instance.redScoreZone.transform.position) < baseDangerRadius)
+            if (Vector3.Distance(PlayerManager.Instance.GetPlayer().transform.position, ScoreZoneManager.Instance.redScoreZone.transform.position) < controller.player.playerSettings.baseDangerRadius)
             {
                 //Don't look for a power-up
                 isFindingItem = false;
@@ -145,9 +135,11 @@ public class StateAISearch : AIState, IState
                 //IS there a power-up nearby?
                 if (spawner.HasItem() && Vector3.Distance(controller.agent.transform.position, spawner.transform.position) <= itemLookRadius)
                 {
+                    Debug.Log("Checking Spawners");
                     //THEN do a random roll to see if I want to go for it
-                    if (Random.Range(0, itemSearchChance.y) <= itemSearchChance.x)
+                    if (Random.Range(0, controller.itemSearchChance.y) <= controller.itemSearchChance.x)
                     {
+                        Debug.Log("Item Found");
                         target = spawner.item.transform;
                         targetSpawner = spawner;
                         isFindingItem = true;//Yes I AM looking for a power-up thank you :D
@@ -155,17 +147,18 @@ public class StateAISearch : AIState, IState
                     }
                 }
             }
+            Debug.Log("No Item Found");
         }
     }
 
     private void ResetItemLookTimer()
     {
-        itemLookWait = Time.time + itemLookCooldown + Random.Range(itemLookCooldown_Noise.x, itemLookCooldown_Noise.y);
+        itemLookWait = Time.time + controller.itemLookCooldown + Random.Range(controller.itemLookCooldown_Noise.x, controller.itemLookCooldown_Noise.y);
     }
 
     private void SetSearchRadius()
     {
-        itemLookRadius = SearchRadius + Random.Range(itemLookRadius_Noise.x, itemLookRadius_Noise.y);
+        itemLookRadius = controller.SearchRadius + Random.Range(controller.itemLookRadius_Noise.x, controller.itemLookRadius_Noise.y);
     }
 
     public void ExitState()

@@ -16,12 +16,24 @@ public class AIController : MonoBehaviour
     public aiState state;
     [HideInInspector] public aiState lastState;
 
+    [Header("--- Attack State Settings")]
+    public float itemUseCooldown;
+    public Vector2 itemUseCooldown_Noise;
+
+    [Header("--- Search State Settings")]
+    public float itemLookCooldown;
+    public Vector2 itemLookCooldown_Noise;
+    [Space]
+    public Vector2 itemLookRadius_Noise;
+    public Vector2 itemSearchChance;//X = number needed AND less than; Y = max num
+    [Space]
+    public float SearchRadius;
+    public float itemUseWait { get; private set; }
+
     [Header("--- Exposed for testing Purposes")]
     public Transform target;
     public NavMeshAgent agent;
     public Player player;
-
-    public StateAISearch searchSettings;
 
     [SerializeField] private StateAIAttack stateAttack;
     [SerializeField] private StateAIPursue statePursue;
@@ -45,6 +57,7 @@ public class AIController : MonoBehaviour
         GameManager.onGameStateChanged += UpdateGameState;
         player.onDamage += OnDamage;
         GameManager.onRoundSetup += OnRespawned;
+        player.Inventory.onItemPickup += ResetItemUseWait;
     }
 
     private void OnDisable()
@@ -52,6 +65,7 @@ public class AIController : MonoBehaviour
         GameManager.onGameStateChanged -= UpdateGameState;
         player.onDamage -= OnDamage;
         GameManager.onRoundSetup -= OnRespawned;
+        player.Inventory.onItemPickup -= ResetItemUseWait;
     }
 
     #endregion
@@ -69,13 +83,6 @@ public class AIController : MonoBehaviour
         statePursue = new StateAIPursue(this);
         stateRetrieve = new StateAIRetrieve(this);
         stateSearch = new StateAISearch(this);
-
-        stateSearch.baseDangerRadius = player.playerSettings.baseDangerRadius;
-        stateSearch.itemLookCooldown = searchSettings.itemLookCooldown;
-        stateSearch.itemLookCooldown_Noise = searchSettings.itemLookCooldown_Noise;
-        stateSearch.itemLookRadius_Noise = searchSettings.itemLookRadius_Noise;
-        stateSearch.itemSearchChance = searchSettings.itemSearchChance;
-        stateSearch.SearchRadius = searchSettings.SearchRadius;
 
         currentState = stateSearch;
     }
@@ -193,9 +200,10 @@ public class AIController : MonoBehaviour
         yield return null;
     }
 
-    public void ResetSprintCooldown()
+    public void ResetItemUseWait()
     {
-        player.playerStats.sprintTimer = Time.time + player.playerStats.sprintCooldown;
+        Debug.Log("Reset Item use Wait Timer");
+        itemUseWait = itemUseCooldown + Random.Range(itemUseCooldown_Noise.x, itemUseCooldown_Noise.y);
     }
 
     private void ModifyStats()
