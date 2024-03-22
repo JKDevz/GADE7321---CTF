@@ -7,8 +7,8 @@ public class PlayerManager : MonoBehaviour
     #region VARIABLES
 
     [Header("--- Player References")]
-    [SerializeField] private GameObject Player;
-    [SerializeField] private GameObject AI;
+    [SerializeField] private Player Player;
+    [SerializeField] private Player AI;
 
     [Header("--- Player Settings")]
     public Transform playerSpawn;
@@ -59,16 +59,16 @@ public class PlayerManager : MonoBehaviour
 
     public void RespawnPlayers()
     {
-        Player.transform.position = playerSpawn.position;
-        AI.transform.position = aiSpawn.position;
+        Player.agent.Warp(playerSpawn.position);
+        AI.agent.Warp(aiSpawn.position);
     }
 
-    public GameObject GetPlayer()
+    public Player GetPlayer()
     {
         return Player;
     }
 
-    public GameObject GetAI()
+    public Player GetAI()
     {
         return AI;
     }

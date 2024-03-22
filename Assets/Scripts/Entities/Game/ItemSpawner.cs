@@ -13,16 +13,39 @@ public class ItemSpawner : MonoBehaviour
 
     #endregion
 
+    private void OnEnable()
+    {
+        if (item != null)
+        {
+            item.onPickedUp += ItemTaken;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (item != null)
+        {
+            item.onPickedUp -= ItemTaken;
+        }
+    }
+
     #region METHODS
 
     public void SpawnItem(GameObject item)
     {
-        GameObject obj = Instantiate(item, gameObject.transform.position, Quaternion.identity, null);
+        GameObject obj = Instantiate(item, gameObject.transform.position + spawnOffset, Quaternion.identity, null);
         if (obj.TryGetComponent<Item>(out Item i))
         {
             this.item = i;
             hasItem = true;
+            this.item.onPickedUp += ItemTaken;
         }
+    }
+
+    private void ItemTaken()
+    {
+        this.item = null;
+        hasItem = false;
     }
 
     public bool HasItem()

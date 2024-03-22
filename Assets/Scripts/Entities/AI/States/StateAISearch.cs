@@ -11,20 +11,22 @@ public class StateAISearch : AIState, IState
     [Header("--- Search State Settings")]
     public float itemLookCooldown;
     public Vector2 itemLookCooldown_Noise;
-    public float itemLookRadius;
+    private float itemLookRadius;
     public Vector2 itemLookRadius_Noise;
     [Space]
     public Vector2 itemSearchChance;//X = number needed AND less than; Y = max num
     [Space]
     public LayerMask whatIsItem;
 
-    [Header("--- Base Check")]
+    [Header("--- Check Radiuses")]
     public float baseDangerRadius;
+    public float SearchRadius;
 
     private Transform target;
 
     private float itemLookWait;
     private RaycastHit itemLookHit;
+    private ItemSpawner targetSpawner;
 
     private bool isFindingItem;
 
@@ -42,14 +44,23 @@ public class StateAISearch : AIState, IState
     public void HandleState(ref GameState gameState)
     {
 
-        if (!isFindingItem)
+        FindFlag();
+        controller.agent.SetDestination(target.position);//Pathfind to the nearest flag
+
+        //IF I can find an item, override my destination to the nearest item
+        if (!isFindingItem && targetSpawner != null && !controller.player.Inventory.HasItem())
         {
             FindItem();
         }
-
-        FindFlag();
-
-        controller.agent.SetDestination(target.position);//Pathfind to the nearest flag
+        else if (isFindingItem && targetSpawner.HasItem() && !controller.player.Inventory.HasItem())
+        {
+            controller.agent.SetDestination(targetSpawner.transform.position);//Pathfind to the nearest flag
+        }
+        else if (targetSpawner == null || !targetSpawner.HasItem() || controller.player.Inventory.HasItem())
+        {
+            isFindingItem = false;
+            targetSpawner = null;
+        }
 
         if (FlagManager.Instance.aiHasFlag && !FlagManager.Instance.playerHasFlag)//If I have my flag AND the player doesn't have theirs -> Enter Retrieve State
         {
@@ -85,6 +96,11 @@ public class StateAISearch : AIState, IState
         {
             controller.ChangeState(aiState.Attack);
         }
+
+        if (controller.player.Inventory.HasItem())
+        {
+            controller.ChangeState(aiState.Attack);
+        }
     }
 
     public void EnterState()
@@ -117,6 +133,7 @@ public class StateAISearch : AIState, IState
         if (!controller.player.Inventory.HasItem() && Time.time > itemLookWait)
         {
             ResetItemLookTimer();
+
             //IS the player close to my base?
             if (Vector3.Distance(PlayerManager.Instance.GetPlayer().transform.position, ScoreZoneManager.Instance.redScoreZone.transform.position) < baseDangerRadius)
             {
@@ -124,28 +141,33 @@ public class StateAISearch : AIState, IState
                 return;
             }
 
-            //IS there a power-up nearby?
-            if (Physics.SphereCast(controller.transform.position, itemLookRadius + Random.Range(itemLookRadius_Noise.x, itemLookRadius_Noise.y), Vector3.zero, out itemLookHit, whatIsItem))
+            SetSearchRadius();
+
+            foreach (ItemSpawner spawner in ItemManager.Instance.itemSpawners)
             {
-                if (itemLookHit.collider.tag == "Power-Up")
+                //IS there a power-up nearby?
+                if (spawner.HasItem() && Vector3.Distance(controller.agent.transform.position, spawner.transform.position) <= SearchRadius)
                 {
                     //THEN do a random roll to see if I want to go for it
                     if (Random.Range(0, itemSearchChance.y) <= itemSearchChance.x)
                     {
-                        target = itemLookHit.collider.transform; 
+                        target = itemLookHit.collider.transform;
                         isFindingItem = true;//Yes I AM looking for a power-up thank you :D
+                        return;
                     }
                 }
             }
         }
-        //CHECK if the player is close to my base
-        //IF NOT then do a random roll to look for a power-up
-        //IF there is a power-up neabry, go to it
     }
 
     private void ResetItemLookTimer()
     {
         itemLookWait = Time.time + itemLookCooldown + Random.Range(itemLookCooldown_Noise.x, itemLookCooldown_Noise.y);
+    }
+
+    private void SetSearchRadius()
+    {
+        itemLookRadius = SearchRadius + Random.Range(0, itemLookRadius_Noise.y);
     }
 
     public void ExitState()

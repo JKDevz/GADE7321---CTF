@@ -14,6 +14,13 @@ public class ScoreZoneManager : MonoBehaviour
 
     #endregion
 
+    #region DELEGATES
+
+    public delegate void OnScore(FlagType flag);
+    public static OnScore onScore;
+
+    #endregion
+
     #region SINGLETON
 
     public static ScoreZoneManager Instance

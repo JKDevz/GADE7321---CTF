@@ -15,6 +15,10 @@ public class PlayerSettingsSO : ScriptableObject
     public float meleeRange;
     public LayerMask canDamage;
 
+    [Header("-- Player Knockback Settings")]
+    public float knockbackDuration;
+    public float knockbackStrength;
+
     [Header("-- Player Navmesh Settings")]
     public float angularSpeed;
     public float stoppingDistance;

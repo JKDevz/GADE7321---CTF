@@ -40,14 +40,14 @@ public class LogPiece : MonoBehaviour
             OnImpact();
             if (other.TryGetComponent<Player>(out Player victim))
             {
-                victim.Damage();
+                victim.Damage(this.gameObject);
             }
         }
     }
 
     private void Update()
     {
-        rb.AddForce(transform.forward * speed, ForceMode.Force);
+        rb.AddForce(transform.forward * speed, ForceMode.Force);//Add extra gravity
 
         if (rb.velocity.magnitude > speed)
         {

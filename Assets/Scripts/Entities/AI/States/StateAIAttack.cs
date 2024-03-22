@@ -9,10 +9,12 @@ public class StateAIAttack : AIState, IState
     {
         if (!controller.player.Inventory.HasItem())
         {
+            controller.agent.SetDestination(PlayerManager.Instance.GetPlayer().transform.position);
             controller.player.Attacking.Attack();
         }
         else
         {
+            controller.agent.SetDestination(PlayerManager.Instance.GetPlayer().transform.position);
             controller.player.Attacking.UseItem();
         }
 

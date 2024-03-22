@@ -98,9 +98,9 @@ public class PlayerAttacking : MonoBehaviour
                 {
                     if (hit != player.boxCollider)//IF I have hit myself, ignore me
                     {
-                        if (hit.TryGetComponent(out IDamageable victim))
+                        if (hit.TryGetComponent(out IEntity victim))
                         {
-                            victim.Damage();//Damage the entity
+                            victim.Damage(this.gameObject);//Damage the entity
                         }
                     }
                 }

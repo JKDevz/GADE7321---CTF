@@ -15,9 +15,7 @@ public class PlayerMovement : MonoBehaviour
     //Input Variables
     private Vector2 moveInput;
 
-    protected bool isSprintHeld;
     protected bool isWalkHeld;
-    protected bool isCarryingFlag;
 
     #endregion
 
@@ -34,16 +32,18 @@ public class PlayerMovement : MonoBehaviour
 
     #endregion
 
-    #region DELEGATES
+    #region ENABLES
 
     private void OnEnable()
     {
         player.onDamage += OnDamage;
+        GameManager.onRoundSetup += OnRespawned;
     }
 
     private void OnDisable()
     {
         player.onDamage -= OnDamage;
+        GameManager.onRoundSetup -= OnRespawned;
     }
 
     #endregion
@@ -56,13 +56,15 @@ public class PlayerMovement : MonoBehaviour
         {
             this.player = player;
         }
-
-        LoadValues();
     }
 
     private void Update()
     {
-        TryMove();
+        if (GameManager.Instance.GetGameState() == GameState.RoundPlaying)
+        {
+            TryMove();
+        }
+
         LoadAnimations();
     }
 
@@ -83,18 +85,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void OnSprint(InputAction.CallbackContext ctx)
-    {
-        if (ctx.started)
-        {
-            isSprintHeld = true;
-        }
-        else if (ctx.canceled)
-        {
-            isSprintHeld = false;
-        }
-    }
-
     #endregion
 
     #region METHODS
@@ -104,9 +94,9 @@ public class PlayerMovement : MonoBehaviour
         if (moveInput.magnitude != 0)//IF the player is moving
         {
             Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y);
-            float moveSpeed = player.playerStats.speed;
+            float moveSpeed = player.playerStats.speed + player.playerStats.speedModifier;
 
-            if (isCarryingFlag == true)
+            if (player.Inventory.HasFlag() == true)
             {
                 moveSpeed -= (moveSpeed * player.playerStats.flagCarryModifier);
             }
@@ -121,7 +111,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void OnDamage()
+    private void OnDamage(GameObject attacker)
     {
         if (!player.playerStats.isStunned)//IF the player is not stunned, stun them
         {
@@ -137,6 +127,17 @@ public class PlayerMovement : MonoBehaviour
         {
             player.Inventory.DropFlag();
         }
+
+        StopCoroutine(Knockback(attacker));
+        StartCoroutine(Knockback(attacker));
+    }
+
+    private void OnRespawned()
+    {
+        StopCoroutine(Knockback(null));
+        StopCoroutine(Stunned());
+        player.playerStats.isStunned = false;
+        player.Inventory.ClearItem();
     }
 
     private IEnumerator Stunned()
@@ -147,28 +148,24 @@ public class PlayerMovement : MonoBehaviour
         player.playerStats.isStunned = false;
     }
 
+    private IEnumerator Knockback(GameObject attacker)
+    {
+        Vector3 direction = transform.position - attacker.transform.position;
+        direction = direction.normalized * player.playerStats.knockbackStrength;
+
+        float dur = Time.time + player.playerStats.knockbackDuration;
+
+        while (Time.time < dur)
+        {
+            agent.Move(direction * Time.deltaTime);
+            yield return null;
+        }
+        yield return null;
+    }
+
     private void LoadAnimations()
     {
         player.playerStats.isTryWalk = isWalkHeld;
-        player.playerStats.isSprinting = isSprintHeld;
-    }
-
-    public void LoadValues()
-    {
-        player.playerStats = new PlayerStats();
-
-        player.playerStats.speed = player.playerSettings.speed;
-        player.playerStats.flagCarryModifier = player.playerSettings.flagCarryModifier;
-
-        player.playerStats.stunDuration = player.playerSettings.stunDuration;
-        player.playerStats.meleeRange = player.playerSettings.meleeRange;
-
-        agent.angularSpeed = player.playerSettings.angularSpeed;
-        agent.autoBraking = player.playerSettings.autoBraking;
-        agent.acceleration = player.playerSettings.acceleration;
-
-        agent.radius = player.playerSettings.radius;
-        agent.height = player.playerSettings.height;
     }
 
     #endregion

@@ -48,14 +48,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dfe47951c532d641bc8f6aa337ab242, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flagType: 2
+  flagType: 1
   flagSpawn: {fileID: 0}
   rb: {fileID: 8647802422824789824}
-  navObstacle: {fileID: 0}
+  trigger: {fileID: 1207377617661368474}
   flagState: 0
   flagDropLaunchStrength: 8
   flagHoldOffset: {x: 0, y: 2, z: 0}
   flagSpawnOffset: {x: 0, y: 5, z: 0}
+  returnDistance: 50
 --- !u!65 &3216079031447019250
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -153,7 +154,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1910320410678916397}

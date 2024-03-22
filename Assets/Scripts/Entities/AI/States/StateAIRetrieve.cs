@@ -21,8 +21,8 @@ public class StateAIRetrieve : AIState, IState
         if (FlagManager.Instance.aiHasFlag && FlagManager.Instance.playerHasFlag)//If both I and the player have our flags
         {
             //If the player is closer to their base than I am to mine -> Pursue the Player
-            if (Vector3.Distance(controller.transform.position, ScoreZoneManager.Instance.redScoreZone.transform.position)
-                < Vector3.Distance(PlayerManager.Instance.GetPlayer().transform.position, ScoreZoneManager.Instance.blueScoreZone.transform.position))
+            if (Vector3.Distance(controller.agent.transform.position, ScoreZoneManager.Instance.redScoreZone.transform.position)
+                >= Vector3.Distance(PlayerManager.Instance.GetPlayer().transform.position, ScoreZoneManager.Instance.blueScoreZone.transform.position))
             {
                 controller.ChangeState(aiState.Pursue);
             }
@@ -41,7 +41,7 @@ public class StateAIRetrieve : AIState, IState
         }
 
         //IF player is close, attack them
-        if (Vector3.Distance(PlayerManager.Instance.GetPlayer().transform.position, controller.transform.position) <= controller.player.playerStats.meleeRange)
+        if (controller.player.Inventory.HasItem() || Vector3.Distance(PlayerManager.Instance.GetPlayer().transform.position, controller.transform.position) <= controller.player.playerStats.meleeRange)
         {
             controller.ChangeState(aiState.Attack);
         }

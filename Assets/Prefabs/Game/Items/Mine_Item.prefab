@@ -104,6 +104,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4690172592998928030, guid: e40d9ec042da1384cb5c4c845efa26c9,
         type: 3}
+      propertyPath: itemPrefab
+      value: 
+      objectReference: {fileID: 4039399377362258370, guid: baa99ab4a49c1bf4fa13b146394c6a31,
+        type: 3}
+    - target: {fileID: 4690172592998928030, guid: e40d9ec042da1384cb5c4c845efa26c9,
+        type: 3}
       propertyPath: meshFilter
       value: 
       objectReference: {fileID: 7998124713934665766}

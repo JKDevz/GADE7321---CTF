@@ -13,7 +13,7 @@ public class PlayerInventory : MonoBehaviour
     [Header(">>> Exposed for testing Only")]
     [SerializeField] private ItemType powerUpSlot;
     [SerializeField] private Flag flagSlot;
-    [SerializeField] private Item itemRef;
+    [SerializeField] private GameObject itemPrefab;
 
     #endregion
 
@@ -39,10 +39,11 @@ public class PlayerInventory : MonoBehaviour
 
     #region METHODS
 
-    public void PickupItem(ItemType type, Item item)
+    public void PickupItem(ItemType type, GameObject prefab)
     {
         powerUpSlot = type;
-        itemRef = new Item(item.itemType, item.itemPrefab, item.meshFilter, item.meshRenderer, item.animator, item.boxCollider, item.pickupOffset, item.pickupTime);
+        itemPrefab = prefab;
+        //itemPrefab = new Item(item.itemType, item.itemPrefab, item.meshFilter, item.meshRenderer, item.animator, item.boxCollider, item.pickupOffset, item.pickupTime);
     }
 
     public void PickupItem(Flag flagType)
@@ -52,21 +53,27 @@ public class PlayerInventory : MonoBehaviour
 
     public void UseItem()
     {
-        if (HasItem() && itemRef != null)
+        if (HasItem() && itemPrefab != null)
         {
-            Instantiate(itemRef.itemPrefab, gameObject.transform.position, Quaternion.identity, transform);
+            Instantiate(itemPrefab, transform.position, transform.rotation, this.transform);
             powerUpSlot = ItemType.Empty;
-            itemRef = null;
+            itemPrefab = null;
+        }
+    }
+
+    public void ClearItem()
+    {
+        if (HasItem() && itemPrefab != null)
+        {
+            powerUpSlot = ItemType.Empty;
+            itemPrefab = null;
         }
     }
 
     public void DropFlag()
     {
-        if (flagSlot != null)
-        {
-            flagSlot.DropFlag();
-            flagSlot = null;
-        }
+        flagSlot.DropFlag();
+        flagSlot = null;
     }
 
     #endregion
@@ -87,7 +94,7 @@ public class PlayerInventory : MonoBehaviour
 
     public bool HasItem()
     {
-        if (powerUpSlot != ItemType.Empty && itemRef != null)
+        if (powerUpSlot != ItemType.Empty && itemPrefab != null)
         {
             return true;
         }

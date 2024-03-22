@@ -1,26 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class LogPower : MonoBehaviour, IPowerUp
 {
     [Header("--- Log Power Settings")]
-    [Range(1f, 10f)]
-    public int logCount;
-    [Range(1f, 5f)]
-    public float rollWidth;
-    public Vector3 offset;
+    public float duration;
+    public Vector3 deployOffset;
+    [Space]
+    public float destroyDelay;
+    public LayerMask whatIsGround;
+
+    [Header("--- Visual Effects")]
+    public ParticleSystem triggerParticles;
+    public GameObject visuals;
 
     [Header("--- Log Power References")]
-    public GameObject rollingLog;
+    public NavMeshObstacle navMeshObstacle;
 
     #region UNITY METHODS
+
+    private void Awake()
+    {
+        this.transform.parent = null;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         Deploy();
-        Destroy();
+        Invoke("Destroy", duration);
     }
 
     #endregion
@@ -29,26 +39,40 @@ public class LogPower : MonoBehaviour, IPowerUp
 
     public void Deploy()
     {
-        Vector3 shootPos = transform.position + offset;
+        transform.Translate(deployOffset);
+        triggerParticles.Play();
 
-        Vector3 start = shootPos + Vector3.left * rollWidth/2;
-        Vector3 end = shootPos + Vector3.right * rollWidth / 2;
-
-        for (int i = 0; i < logCount; i++)
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, Mathf.Infinity, whatIsGround))
         {
-            Vector3 spawnPos = Vector3.Lerp(start, end, i/logCount);
-            Instantiate(rollingLog, spawnPos, Quaternion.identity, null);
+            transform.position = hit.transform.position;
         }
+
+        StartCoroutine(ToggleArmed(true));
+        StartCoroutine(ToggleArmed(false, duration));
     }
 
     public void Destroy()
     {
-        Destroy(this);
+        Destroy(this, destroyDelay);
+        triggerParticles.Play();
+        visuals.SetActive(false);
     }
 
     public void Handle()
     {
         
+    }
+
+    private IEnumerator ToggleArmed(bool b)
+    {
+        yield return new WaitForSeconds(0f);
+        navMeshObstacle.enabled = b;
+    }
+
+    private IEnumerator ToggleArmed(bool b, float t)
+    {
+        yield return new WaitForSeconds(t);
+        navMeshObstacle.enabled = b;
     }
 
     #endregion

@@ -64,7 +64,7 @@ public class Item : MonoBehaviour
     {
         if (eventCollider.TryGetComponent<PlayerInventory>(out PlayerInventory inv))
         {
-            inv.PickupItem(itemType, this);
+            inv.PickupItem(itemType, itemPrefab);
         }
     }
 

@@ -8,19 +8,18 @@ public class StateRoundSetup : IState
 
     public void HandleState(ref GameState currentState)
     {
-        GameManager.onRoundSetup?.Invoke();
         //Spawn Flags
         //Spawn Players
 
         //3 second countdown
         //Drop the base walls
 
-        currentState = GameState.RoundPlaying;
+        GameManager.Instance.ChangeState(GameState.RoundPlaying);
     }
 
     public void EnterState()
     {
-
+        GameManager.onRoundSetup?.Invoke();
     }
 
     public void ExitState()

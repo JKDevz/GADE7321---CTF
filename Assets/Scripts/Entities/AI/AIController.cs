@@ -21,10 +21,10 @@ public class AIController : MonoBehaviour
     public NavMeshAgent agent;
     public Player player;
 
-    private StateAIAttack stateAttack;
-    private StateAIPursue statePursue;
-    private StateAIRetrieve stateRetrieve;
-    private StateAISearch stateSearch;
+    [SerializeField] private StateAIAttack stateAttack;
+    [SerializeField] private StateAIPursue statePursue;
+    [SerializeField] private StateAIRetrieve stateRetrieve;
+    [SerializeField] private StateAISearch stateSearch;
 
     private GameState gameState;
 
@@ -42,12 +42,14 @@ public class AIController : MonoBehaviour
     {
         GameManager.onGameStateChanged += UpdateGameState;
         player.onDamage += OnDamage;
+        GameManager.onRoundSetup += OnRespawned;
     }
 
     private void OnDisable()
     {
         GameManager.onGameStateChanged -= UpdateGameState;
         player.onDamage -= OnDamage;
+        GameManager.onRoundSetup -= OnRespawned;
     }
 
     #endregion
@@ -60,8 +62,6 @@ public class AIController : MonoBehaviour
         {
             this.player = player;
         }
-
-        LoadValues();
 
         stateAttack = new StateAIAttack(this);
         statePursue = new StateAIPursue(this);
@@ -77,7 +77,15 @@ public class AIController : MonoBehaviour
     {
         ModifyStats();
         LoadAnimations();
-        currentState.HandleState(ref gameState);
+        
+        if (GameManager.Instance.GetGameState() == GameState.RoundPlaying)
+        {
+            currentState.HandleState(ref gameState);
+        }
+        else
+        {
+            agent.SetDestination(transform.position);
+        }
     }
 
     #endregion
@@ -114,7 +122,7 @@ public class AIController : MonoBehaviour
         gameState = GameManager.Instance.GetGameState();
     }
 
-    private void OnDamage()
+    private void OnDamage(GameObject attacker)
     {
         if (!player.playerStats.isStunned)//IF the player is not stunned, stun them
         {
@@ -130,6 +138,17 @@ public class AIController : MonoBehaviour
         {
             player.Inventory.DropFlag();
         }
+
+        StopCoroutine(Knockback(attacker));
+        StartCoroutine(Knockback(attacker));
+    }
+
+    private void OnRespawned()
+    {
+        StopCoroutine(Knockback(null));
+        StopCoroutine(Stunned());
+        player.playerStats.isStunned = false;
+        player.Inventory.ClearItem();
     }
 
     private void LoadAnimations()
@@ -152,6 +171,21 @@ public class AIController : MonoBehaviour
         player.playerStats.isStunned = false;
     }
 
+    private IEnumerator Knockback(GameObject attacker)
+    {
+        Vector3 direction = transform.position - attacker.transform.position;
+        direction = direction.normalized * player.playerStats.knockbackStrength;
+
+        float dur = Time.time + player.playerStats.knockbackDuration;
+
+        while (Time.time < dur)
+        {
+            agent.Move(direction * Time.deltaTime);
+            yield return null;
+        }
+        yield return null;
+    }
+
     public void ResetSprintCooldown()
     {
         player.playerStats.sprintTimer = Time.time + player.playerStats.sprintCooldown;
@@ -159,7 +193,7 @@ public class AIController : MonoBehaviour
 
     private void ModifyStats()
     {
-        float moveSpeed = player.playerStats.speed;
+        float moveSpeed = player.playerStats.speed + player.playerStats.speedModifier;
 
         if (player.Inventory.HasFlag())
         {
@@ -172,24 +206,6 @@ public class AIController : MonoBehaviour
         }
 
         agent.speed = moveSpeed;
-    }
-
-    public void LoadValues()
-    {
-        player.playerStats = new PlayerStats();
-
-        player.playerStats.speed = player.playerSettings.speed;
-        player.playerStats.flagCarryModifier = player.playerSettings.flagCarryModifier;
-
-        player.playerStats.stunDuration = player.playerSettings.stunDuration;
-        player.playerStats.meleeRange = player.playerSettings.meleeRange;
-
-        agent.angularSpeed = player.playerSettings.angularSpeed;
-        agent.autoBraking = player.playerSettings.autoBraking;
-        agent.acceleration = player.playerSettings.acceleration;
-
-        agent.radius = player.playerSettings.radius;
-        agent.height = player.playerSettings.height;
     }
 
     #endregion

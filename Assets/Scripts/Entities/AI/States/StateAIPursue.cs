@@ -32,6 +32,11 @@ public class StateAIPursue : AIState, IState
         {
             controller.ChangeState(aiState.Attack);
         }
+
+        if (controller.player.Inventory.HasItem())
+        {
+            controller.ChangeState(aiState.Attack);
+        }
     }
 
     public void EnterState()

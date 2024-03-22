@@ -9,13 +9,14 @@ public class GameManager : MonoBehaviour
     [Header("--- Game Settings")]
     [SerializeField] private int scoreToWin = 5;
     [SerializeField] private GameState gameState = GameState.RoundSetup;
+    public Transform globalOrientation;
 
     private static GameManager _instance;
 
-    private int playerScore;
-    private int aiScore;
+    public int playerScore { get; private set; }
+    public int aiScore { get; private set; }
 
-    private int currentRound;
+    public int currentRound;
     private GameState lastState;
 
     public StateGameStart stateGameStart { get; private set; }
@@ -24,6 +25,8 @@ public class GameManager : MonoBehaviour
     public StateRoundFinished stateRoundFinished { get; private set; }
     public StateGameFinished stateGameFinished { get; private set; }
     public StateGamePaused stateGamePaused { get; private set; }
+
+    private IState currentStateClass;
 
     #endregion
 
@@ -51,6 +54,9 @@ public class GameManager : MonoBehaviour
     public delegate void OnGameStateChanged();
     public static OnGameStateChanged onGameStateChanged;
 
+    public delegate void OnScoreUpdated();
+    public static OnScoreUpdated onScoreUpdated;
+
     #endregion
 
     #region SINGLETON STUFF
@@ -76,6 +82,20 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+    #region ENABLE/DISABLE
+
+    private void OnEnable()
+    {
+        ScoreZoneManager.onScore += OnPlayerScored;
+    }
+
+    private void OnDisable()
+    {
+        ScoreZoneManager.onScore -= OnPlayerScored;
+    }
+
+    #endregion
+
     #region UNITY METHODS
 
     private void Awake()
@@ -86,46 +106,90 @@ public class GameManager : MonoBehaviour
         stateRoundFinished = new StateRoundFinished();
         stateGameFinished = new StateGameFinished();
         stateGamePaused = new StateGamePaused();
+
+        gameState = GameState.GamePaused;
+        currentStateClass = stateGamePaused;
     }
 
     void Start()
     {
-        currentRound = 1;
+        currentRound = 0;
+        ChangeState(GameState.GameStart);
     }
 
     private void Update()
     {
-        if (gameState != lastState)
-        {
-            onGameStateChanged?.Invoke();
-        }
-
-        switch (gameState)
-        {
-            case GameState.GameStart:
-                stateGameStart.HandleState(ref gameState);
-                break;
-            case GameState.RoundSetup:
-                stateRoundSetup.HandleState(ref gameState);
-                break;
-            case GameState.RoundPlaying:
-                stateRoundPlaying.HandleState(ref gameState);
-                break;
-            case GameState.RoundFinished:
-                stateRoundFinished.HandleState(ref gameState);
-                break;
-            case GameState.GameFinished:
-                stateGameFinished.HandleState(ref gameState);
-                break;
-            case GameState.GamePaused:
-                stateGamePaused.HandleState(ref gameState);
-                break;
-        }
+        currentStateClass.HandleState(ref gameState);
     }
 
     public GameState GetGameState()
     {
         return gameState;
+    }
+
+    #endregion
+
+    #region METHODS
+
+    private void OnPlayerScored(FlagType flag)
+    {
+        ChangeState(GameState.RoundFinished);
+
+        if (flag == FlagType.None)
+        {
+            return;
+        }
+        else if (flag == FlagType.Blue)
+        {
+            playerScore++;
+        }
+        else if (flag == FlagType.Red)
+        {
+            aiScore++;
+        }
+
+        onScoreUpdated?.Invoke();
+
+        if (playerScore == scoreToWin || aiScore == scoreToWin)
+        {
+            ChangeState(GameState.GameFinished);
+            onGameFinished?.Invoke();
+        }
+    }
+
+    public void ChangeState(GameState newState)
+    {
+        if (gameState != newState)//IF the state to change is NOT the same as the current game state
+        {
+            lastState = gameState;
+            gameState = newState;
+            currentStateClass.ExitState();
+
+            switch (gameState)
+            {
+                case GameState.GameStart:
+                    currentStateClass = stateGameStart;
+                    break;
+                case GameState.RoundSetup:
+                    currentStateClass = stateRoundSetup;
+                    break;
+                case GameState.RoundPlaying:
+                    currentStateClass = stateRoundPlaying;
+                    break;
+                case GameState.RoundFinished:
+                    currentStateClass = stateRoundFinished;
+                    break;
+                case GameState.GameFinished:
+                    currentStateClass = stateGameFinished;
+                    break;
+                case GameState.GamePaused:
+                    currentStateClass = stateGamePaused;
+                    break;
+            }
+
+            onGameStateChanged?.Invoke();
+            currentStateClass.EnterState();
+        }
     }
 
     #endregion
