@@ -11,8 +11,9 @@ public class PlayerInventory : MonoBehaviour
     public FlagType pickupFlag;
 
     [Header(">>> Exposed for testing Only")]
-    [SerializeField] private PowerUp powerUpSlot;
+    [SerializeField] private ItemType powerUpSlot;
     [SerializeField] private Flag flagSlot;
+    [SerializeField] private GameObject itemPrefab;
 
     #endregion
 
@@ -26,13 +27,23 @@ public class PlayerInventory : MonoBehaviour
         }
     }
 
+    public void OnUseItem(InputAction.CallbackContext ctx)
+    {
+        if (ctx.started)
+        {
+            UseItem();
+        }
+    }
+
     #endregion
 
     #region METHODS
 
-    public void PickupItem(PowerUp powerUp)
+    public void PickupItem(ItemType type, GameObject prefab)
     {
-        powerUpSlot = powerUp;
+        powerUpSlot = type;
+        itemPrefab = prefab;
+        //itemPrefab = new Item(item.itemType, item.itemPrefab, item.meshFilter, item.meshRenderer, item.animator, item.boxCollider, item.pickupOffset, item.pickupTime);
     }
 
     public void PickupItem(Flag flagType)
@@ -40,13 +51,29 @@ public class PlayerInventory : MonoBehaviour
         flagSlot = flagType;
     }
 
+    public void UseItem()
+    {
+        if (HasItem() && itemPrefab != null)
+        {
+            Instantiate(itemPrefab, transform.position, transform.rotation, this.transform);
+            powerUpSlot = ItemType.Empty;
+            itemPrefab = null;
+        }
+    }
+
+    public void ClearItem()
+    {
+        if (HasItem() && itemPrefab != null)
+        {
+            powerUpSlot = ItemType.Empty;
+            itemPrefab = null;
+        }
+    }
+
     public void DropFlag()
     {
-        if (flagSlot != null)
-        {
-            flagSlot.DropFlag();
-            flagSlot = null;
-        }
+        flagSlot.DropFlag();
+        flagSlot = null;
     }
 
     #endregion
@@ -67,7 +94,7 @@ public class PlayerInventory : MonoBehaviour
 
     public bool HasItem()
     {
-        if (powerUpSlot != PowerUp.Empty)
+        if (powerUpSlot != ItemType.Empty && itemPrefab != null)
         {
             return true;
         }
@@ -81,7 +108,7 @@ public class PlayerInventory : MonoBehaviour
 
 }
 
-public enum PowerUp
+public enum ItemType
 {
     Empty,
     Log,

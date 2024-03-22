@@ -9,23 +9,13 @@ public class PlayerMovement : MonoBehaviour
     #region VARIABLES
 
     [Header("-- Movement Settings Reference")]
-    [SerializeField] protected PlayerSettingsSO playerSettings;
     [SerializeField] protected NavMeshAgent agent;
-
-    //Movement Stats
-    protected float speed;
+    [SerializeField] protected Player player;
 
     //Input Variables
     private Vector2 moveInput;
 
-    protected bool isSprintHeld;
-    protected bool isCarryingFlag;
-
-    private float sprintModifier;
-    private float flagCarryModifier;
-
-    private float sprintApplier = 1f;
-    private float flagPenaltyApplier = 0.9f;
+    protected bool isWalkHeld;
 
     #endregion
 
@@ -42,16 +32,40 @@ public class PlayerMovement : MonoBehaviour
 
     #endregion
 
+    #region ENABLES
+
+    private void OnEnable()
+    {
+        player.onDamage += OnDamage;
+        GameManager.onRoundSetup += OnRespawned;
+    }
+
+    private void OnDisable()
+    {
+        player.onDamage -= OnDamage;
+        GameManager.onRoundSetup -= OnRespawned;
+    }
+
+    #endregion
+
     #region MAIN LOOP
 
     private void Awake()
     {
-        LoadValues();
+        if (TryGetComponent<Player>(out Player player))
+        {
+            this.player = player;
+        }
     }
 
     private void Update()
     {
-        TryMove();
+        if (GameManager.Instance.GetGameState() == GameState.RoundPlaying)
+        {
+            TryMove();
+        }
+
+        LoadAnimations();
     }
 
     #endregion
@@ -61,19 +75,13 @@ public class PlayerMovement : MonoBehaviour
     public void OnMove(InputAction.CallbackContext ctx)
     {
         moveInput = ctx.ReadValue<Vector2>();
-    }
-
-    public void OnSprint(InputAction.CallbackContext ctx)
-    {
         if (ctx.started)
         {
-            isSprintHeld = true;
-            sprintApplier = sprintModifier;
+            isWalkHeld = true;
         }
-        else
+        else if (ctx.canceled)
         {
-            isSprintHeld = false;
-            sprintApplier = 1f;
+            isWalkHeld = false;
         }
     }
 
@@ -83,37 +91,81 @@ public class PlayerMovement : MonoBehaviour
 
     public void TryMove()
     {
-        if (moveInput.magnitude != 0)//Moves the player when player gives horizontal input
+        if (moveInput.magnitude != 0)//IF the player is moving
         {
             Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y);
-            float moveSpeed = speed;
+            float moveSpeed = player.playerStats.speed + player.playerStats.speedModifier;
 
-            if (isSprintHeld)
+            if (player.Inventory.HasFlag() == true)
             {
-                moveSpeed += sprintApplier * speed;
+                moveSpeed -= (moveSpeed * player.playerStats.flagCarryModifier);
             }
 
-            if (isCarryingFlag)
+            if (player.playerStats.isStunned == true)
             {
-                moveSpeed -= flagCarryModifier * moveSpeed;
+                moveSpeed /= 2;
             }
 
             agent.velocity = move * moveSpeed;
+
         }
     }
 
-    public void LoadValues()
+    private void OnDamage(GameObject attacker)
     {
-        speed = playerSettings.speed;
-        sprintModifier = playerSettings.sprintModifier;
-        flagCarryModifier = playerSettings.flagCarryModifier;
+        if (!player.playerStats.isStunned)//IF the player is not stunned, stun them
+        {
+            StartCoroutine(Stunned());
+        }
+        else//IF the player is already stunned, reset the stun duration
+        {
+            player.playerStats.stunTimer = Time.time + player.playerSettings.stunDuration;
+        }
 
-        agent.angularSpeed = playerSettings.angularSpeed;
-        agent.autoBraking = playerSettings.autoBraking;
-        agent.acceleration = playerSettings.acceleration;
+        //IF the player is holding their flag, drop it
+        if (player.Inventory.HasFlag())
+        {
+            player.Inventory.DropFlag();
+        }
 
-        agent.radius = playerSettings.radius;
-        agent.height = playerSettings.height;
+        StopCoroutine(Knockback(attacker));
+        StartCoroutine(Knockback(attacker));
+    }
+
+    private void OnRespawned()
+    {
+        StopCoroutine(Knockback(null));
+        StopCoroutine(Stunned());
+        player.playerStats.isStunned = false;
+        player.Inventory.ClearItem();
+    }
+
+    private IEnumerator Stunned()
+    {
+        player.playerStats.stunTimer = Time.time + player.playerSettings.stunDuration;
+        player.playerStats.isStunned = true;
+        yield return new WaitUntil(() => Time.time > player.playerStats.stunTimer);
+        player.playerStats.isStunned = false;
+    }
+
+    private IEnumerator Knockback(GameObject attacker)
+    {
+        Vector3 direction = transform.position - attacker.transform.position;
+        direction = direction.normalized * player.playerStats.knockbackStrength;
+
+        float dur = Time.time + player.playerStats.knockbackDuration;
+
+        while (Time.time < dur)
+        {
+            agent.Move(direction * Time.deltaTime);
+            yield return null;
+        }
+        yield return null;
+    }
+
+    private void LoadAnimations()
+    {
+        player.playerStats.isTryWalk = isWalkHeld;
     }
 
     #endregion

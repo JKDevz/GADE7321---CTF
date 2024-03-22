@@ -10,6 +10,9 @@ public class FlagManager : MonoBehaviour
     public Flag redFlag;
     public Flag blueFlag;
 
+    public bool playerHasFlag { get; protected set; }
+    public bool aiHasFlag { get; protected set; }
+
     private static FlagManager _instance;
 
     #endregion
@@ -19,11 +22,15 @@ public class FlagManager : MonoBehaviour
     private void OnEnable()
     {
         GameManager.onRoundSetup += ResetFlags;
+        Flag.onFlagPickup += OnFlagPickup;
+        Flag.onFlagDrop += OnFlagDrop;
     }
 
     private void OnDisable()
     {
         GameManager.onRoundSetup -= ResetFlags;
+        Flag.onFlagPickup -= OnFlagPickup;
+        Flag.onFlagDrop -= OnFlagDrop;
     }
 
     #endregion
@@ -57,6 +64,34 @@ public class FlagManager : MonoBehaviour
     {
         redFlag.ResetPosition();
         blueFlag.ResetPosition();
+    }
+
+    #endregion
+
+    #region UTILITY METHODS
+
+    private void OnFlagPickup(FlagType type)
+    {
+        if (type == FlagType.Blue)
+        {
+            playerHasFlag = true;
+        }
+        else if (type == FlagType.Red)
+        {
+            aiHasFlag = true;
+        }
+    }
+
+    private void OnFlagDrop(FlagType type)
+    {
+        if (type == FlagType.Blue)
+        {
+            playerHasFlag = false;
+        }
+        else if (type == FlagType.Red)
+        {
+            aiHasFlag = false;
+        }
     }
 
     #endregion

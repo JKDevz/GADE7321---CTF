@@ -9,15 +9,6 @@ public class ScoreZone : MonoBehaviour
     [Header("--- Score Zone Settings")]
     public FlagType checkFlag;
 
-    private static ScoreZone _instance;
-
-    #endregion
-
-    #region DELEGATES
-
-    public delegate void OnScore(FlagType type);
-    public static OnScore onScore;
-
     #endregion
 
     #region COLLISIONS
@@ -26,9 +17,13 @@ public class ScoreZone : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            if (other.TryGetComponent<PlayerInventory>(out PlayerInventory inv) && inv.pickupFlag == checkFlag)
+            if (other.TryGetComponent<PlayerInventory>(out PlayerInventory inv))
             {
-                onScore?.Invoke(checkFlag);
+                if (inv.pickupFlag == checkFlag && inv.HasFlag())
+                {
+                    inv.DropFlag();
+                    ScoreZoneManager.onScore?.Invoke(checkFlag);
+                }
             }
         }
     }

@@ -7,7 +7,7 @@ public class StateGameStart : IState
     public void HandleState(ref GameState currentState)
     {
         //Play intro, showcase the map, etc.
-        currentState = GameState.RoundSetup;
+        GameManager.Instance.ChangeState(GameState.RoundSetup);
     }
 
     public void EnterState()

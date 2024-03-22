@@ -12,12 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8cda90e40bd66b49923c38bf1cc598f, type: 3}
   m_Name: PlayerSettings
   m_EditorClassIdentifier: 
-  speed: 5
-  sprintModifier: 1.25
-  flagCarryModifier: 0.9
+  speed: 6.5
+  flagCarryModifier: 0.3
   acceleration: 25
+  stunDuration: 3.25
+  meleeRange: 1.5
+  canDamage:
+    serializedVersion: 2
+    m_Bits: 64
+  knockbackDuration: 0.17
+  knockbackStrength: 3
   angularSpeed: 720
   stoppingDistance: 0
   autoBraking: 1
   radius: 0.7
   height: 1.7
+  baseDangerRadius: 10

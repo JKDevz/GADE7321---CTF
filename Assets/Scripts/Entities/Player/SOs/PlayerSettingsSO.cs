@@ -7,9 +7,17 @@ public class PlayerSettingsSO : ScriptableObject
 {
     [Header("-- Player Movement Settings")]
     public float speed;
-    public float sprintModifier;
     public float flagCarryModifier;
     public float acceleration;
+
+    [Header("-- Player Attack Settings")]
+    public float stunDuration;
+    public float meleeRange;
+    public LayerMask canDamage;
+
+    [Header("-- Player Knockback Settings")]
+    public float knockbackDuration;
+    public float knockbackStrength;
 
     [Header("-- Player Navmesh Settings")]
     public float angularSpeed;
@@ -19,4 +27,7 @@ public class PlayerSettingsSO : ScriptableObject
     [Header("-- Navmesh Obstacle Avoidance")]
     public float radius;
     public float height;
+
+    [Header("-- AI Settings")]
+    public float baseDangerRadius;
 }
