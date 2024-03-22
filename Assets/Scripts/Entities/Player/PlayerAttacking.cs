@@ -71,7 +71,7 @@ public class PlayerAttacking : MonoBehaviour
     {
         if (player.Inventory.HasItem())
         {
-            
+            player.Inventory.UseItem();
         }
     }
 

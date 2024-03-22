@@ -40,7 +40,7 @@ public class StateAIRetrieve : AIState, IState
             controller.ChangeState(aiState.Search);
         }
 
-        //IF player is close, attack them
+        //IF player is close, attack them OR if I have an Item, then use it
         if (controller.player.Inventory.HasItem() || Vector3.Distance(PlayerManager.Instance.GetPlayer().transform.position, controller.transform.position) <= controller.player.playerStats.meleeRange)
         {
             controller.ChangeState(aiState.Attack);

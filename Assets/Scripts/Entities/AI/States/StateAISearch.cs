@@ -13,19 +13,15 @@ public class StateAISearch : AIState, IState
     public Vector2 itemLookCooldown_Noise;
     private float itemLookRadius;
     public Vector2 itemLookRadius_Noise;
-    [Space]
     public Vector2 itemSearchChance;//X = number needed AND less than; Y = max num
-    [Space]
-    public LayerMask whatIsItem;
+    public float SearchRadius;
 
     [Header("--- Check Radiuses")]
     public float baseDangerRadius;
-    public float SearchRadius;
 
     private Transform target;
 
     private float itemLookWait;
-    private RaycastHit itemLookHit;
     private ItemSpawner targetSpawner;
 
     private bool isFindingItem;
@@ -48,18 +44,17 @@ public class StateAISearch : AIState, IState
         controller.agent.SetDestination(target.position);//Pathfind to the nearest flag
 
         //IF I can find an item, override my destination to the nearest item
-        if (!isFindingItem && targetSpawner != null && !controller.player.Inventory.HasItem())
+        if (!isFindingItem && !controller.player.Inventory.HasItem())
         {
             FindItem();
         }
         else if (isFindingItem && targetSpawner.HasItem() && !controller.player.Inventory.HasItem())
         {
-            controller.agent.SetDestination(targetSpawner.transform.position);//Pathfind to the nearest flag
+            controller.agent.SetDestination(targetSpawner.item.transform.position);//Pathfind to the nearest flag
         }
-        else if (targetSpawner == null || !targetSpawner.HasItem() || controller.player.Inventory.HasItem())
+        else if (!targetSpawner.HasItem() || controller.player.Inventory.HasItem())
         {
             isFindingItem = false;
-            targetSpawner = null;
         }
 
         if (FlagManager.Instance.aiHasFlag && !FlagManager.Instance.playerHasFlag)//If I have my flag AND the player doesn't have theirs -> Enter Retrieve State
@@ -99,6 +94,7 @@ public class StateAISearch : AIState, IState
 
         if (controller.player.Inventory.HasItem())
         {
+            Debug.Log("using Item!");
             controller.ChangeState(aiState.Attack);
         }
     }
@@ -138,6 +134,7 @@ public class StateAISearch : AIState, IState
             if (Vector3.Distance(PlayerManager.Instance.GetPlayer().transform.position, ScoreZoneManager.Instance.redScoreZone.transform.position) < baseDangerRadius)
             {
                 //Don't look for a power-up
+                isFindingItem = false;
                 return;
             }
 
@@ -146,12 +143,13 @@ public class StateAISearch : AIState, IState
             foreach (ItemSpawner spawner in ItemManager.Instance.itemSpawners)
             {
                 //IS there a power-up nearby?
-                if (spawner.HasItem() && Vector3.Distance(controller.agent.transform.position, spawner.transform.position) <= SearchRadius)
+                if (spawner.HasItem() && Vector3.Distance(controller.agent.transform.position, spawner.transform.position) <= itemLookRadius)
                 {
                     //THEN do a random roll to see if I want to go for it
                     if (Random.Range(0, itemSearchChance.y) <= itemSearchChance.x)
                     {
-                        target = itemLookHit.collider.transform;
+                        target = spawner.item.transform;
+                        targetSpawner = spawner;
                         isFindingItem = true;//Yes I AM looking for a power-up thank you :D
                         return;
                     }
@@ -167,7 +165,7 @@ public class StateAISearch : AIState, IState
 
     private void SetSearchRadius()
     {
-        itemLookRadius = SearchRadius + Random.Range(0, itemLookRadius_Noise.y);
+        itemLookRadius = SearchRadius + Random.Range(itemLookRadius_Noise.x, itemLookRadius_Noise.y);
     }
 
     public void ExitState()

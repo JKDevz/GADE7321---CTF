@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3481616025614815656}
   - component: {fileID: 405133548435347306}
   - component: {fileID: 7990639359277813842}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Ka-Boom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 4081564766277838309}
   - component: {fileID: 565950989673021288}
   - component: {fileID: 5468735356876234895}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Ka-Boom_Fuse
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,9 +12,8 @@ public class StateAIAttack : AIState, IState
             controller.agent.SetDestination(PlayerManager.Instance.GetPlayer().transform.position);
             controller.player.Attacking.Attack();
         }
-        else
+        else if (controller.player.Inventory.HasItem())
         {
-            controller.agent.SetDestination(PlayerManager.Instance.GetPlayer().transform.position);
             controller.player.Attacking.UseItem();
         }
 

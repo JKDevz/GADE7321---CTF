@@ -21,6 +21,8 @@ public class AIController : MonoBehaviour
     public NavMeshAgent agent;
     public Player player;
 
+    public StateAISearch searchSettings;
+
     [SerializeField] private StateAIAttack stateAttack;
     [SerializeField] private StateAIPursue statePursue;
     [SerializeField] private StateAIRetrieve stateRetrieve;
@@ -69,6 +71,11 @@ public class AIController : MonoBehaviour
         stateSearch = new StateAISearch(this);
 
         stateSearch.baseDangerRadius = player.playerSettings.baseDangerRadius;
+        stateSearch.itemLookCooldown = searchSettings.itemLookCooldown;
+        stateSearch.itemLookCooldown_Noise = searchSettings.itemLookCooldown_Noise;
+        stateSearch.itemLookRadius_Noise = searchSettings.itemLookRadius_Noise;
+        stateSearch.itemSearchChance = searchSettings.itemSearchChance;
+        stateSearch.SearchRadius = searchSettings.SearchRadius;
 
         currentState = stateSearch;
     }

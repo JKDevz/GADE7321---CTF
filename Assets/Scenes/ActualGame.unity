@@ -1038,7 +1038,7 @@ NavMeshAgent:
   m_Radius: 0.75
   m_Speed: 3.5
   m_Acceleration: 8
-  avoidancePriority: 1
+  avoidancePriority: 0
   m_AngularSpeed: 120
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
@@ -1081,16 +1081,20 @@ MonoBehaviour:
   target: {fileID: 0}
   agent: {fileID: 355978030}
   player: {fileID: 355978037}
+  searchSettings:
+    itemLookCooldown: 2
+    itemLookCooldown_Noise: {x: 0, y: 3}
+    itemLookRadius_Noise: {x: 0, y: 10}
+    itemSearchChance: {x: 1, y: 5}
+    SearchRadius: 20
+    baseDangerRadius: 10
   stateSearch:
     itemLookCooldown: 1
-    itemLookCooldown_Noise: {x: 0, y: 0.25}
-    itemLookRadius_Noise: {x: 0, y: 0}
-    itemSearchChance: {x: 5, y: 6}
-    whatIsItem:
-      serializedVersion: 2
-      m_Bits: 0
-    baseDangerRadius: 0
-    SearchRadius: 0
+    itemLookCooldown_Noise: {x: 0, y: 1}
+    itemLookRadius_Noise: {x: 0, y: 5}
+    itemSearchChance: {x: 1, y: 5}
+    SearchRadius: 10
+    baseDangerRadius: 10
 --- !u!65 &355978033
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1926,14 +1930,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 152e537e5bf4a824f90beaaba75dcbef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnRandomness: {x: 2, y: 5}
+  spawnRandomness: {x: 0.5, y: 1}
   itemSpawners:
   - {fileID: 1000004176}
+  - {fileID: 1068674965}
   - {fileID: 1490799733}
+  - {fileID: 1301969459}
+  - {fileID: 1301969458}
   - {fileID: 379444228}
   - {fileID: 377076676}
   - {fileID: 1008822831}
-  - {fileID: 1068674965}
   itemList:
   - {fileID: 3578292473680333682, guid: be11516a861473a448778e645fac7607, type: 3}
   - {fileID: 3578292473680333682, guid: be11516a861473a448778e645fac7607, type: 3}
@@ -5066,6 +5072,30 @@ MonoBehaviour:
   red: {r: 0.7882353, g: 0.39215687, b: 0.37254903, a: 1}
   redGlow: {r: 0.84705883, g: 0.6156863, b: 0.56078434, a: 1}
   intensity: 1.5
+--- !u!114 &1301969458 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 475073594947050143, guid: b8b7aceb5b2e5e644a87658ce8f4a175,
+    type: 3}
+  m_PrefabInstance: {fileID: 853535092603595445}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a38b4cd8b4bcc654f967deccf415fefa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1301969459 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5662860126988901023, guid: b8b7aceb5b2e5e644a87658ce8f4a175,
+    type: 3}
+  m_PrefabInstance: {fileID: 853535092603595445}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a38b4cd8b4bcc654f967deccf415fefa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1304239164
 GameObject:
   m_ObjectHideFlags: 0
@@ -5796,10 +5826,10 @@ MonoBehaviour:
     m_ActionName: Player/Shoot[/Mouse/leftButton]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1507918593}
-        m_TargetAssemblyTypeName: PlayerInventory, Assembly-CSharp
-        m_MethodName: OnUseItem
-        m_Mode: 0
+      - m_Target: {fileID: 1507918596}
+        m_TargetAssemblyTypeName: PlayerAttacking, Assembly-CSharp
+        m_MethodName: UseItem
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -8489,6 +8519,16 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 885133dc804eaea468f0408f5f23e3b5, type: 2}
+    - target: {fileID: 2825395557856032557, guid: b8b7aceb5b2e5e644a87658ce8f4a175,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 44
+      objectReference: {fileID: 0}
+    - target: {fileID: 2825395557856032557, guid: b8b7aceb5b2e5e644a87658ce8f4a175,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 2837449486299109883, guid: b8b7aceb5b2e5e644a87658ce8f4a175,
         type: 3}
       propertyPath: m_Materials.Array.data[0]

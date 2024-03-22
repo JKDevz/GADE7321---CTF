@@ -69,6 +69,8 @@ public class Player : MonoBehaviour, IEntity
         agent.angularSpeed = playerSettings.angularSpeed;
         agent.autoBraking = playerSettings.autoBraking;
         agent.acceleration = playerSettings.acceleration;
+        agent.radius = playerSettings.radius;
+        agent.height = playerSettings.height;
 
         playerStats.radius = playerSettings.radius;
         playerStats.height = playerSettings.height;

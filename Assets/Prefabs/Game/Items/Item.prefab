@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 47965555881443935}
   - component: {fileID: 7771847467896601852}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Visuals
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -67,7 +67,7 @@ GameObject:
   - component: {fileID: 4131708461039612670}
   - component: {fileID: 3870295018582265365}
   - component: {fileID: 6550667446496503803}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Item
   m_TagString: Power-Up
   m_Icon: {fileID: 0}
@@ -191,7 +191,7 @@ GameObject:
   - component: {fileID: 3587614751870981907}
   - component: {fileID: 4633775285748984730}
   - component: {fileID: 1026352193258741845}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
