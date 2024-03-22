@@ -36,10 +36,12 @@ public class StateAISearch : AIState, IState
         //IF I can find an item, override my destination to the nearest item
         if (!isFindingItem && !controller.player.Inventory.HasItem())
         {
+            //controller.ResetItemUseWait();
             FindItem();
         }
         else if (isFindingItem && targetSpawner.HasItem() && !controller.player.Inventory.HasItem())
         {
+            //controller.ResetItemUseWait();
             controller.agent.SetDestination(targetSpawner.item.transform.position);//Pathfind to the nearest flag
         }
         else if (!targetSpawner.HasItem() || controller.player.Inventory.HasItem())
@@ -114,7 +116,6 @@ public class StateAISearch : AIState, IState
 
     private void FindItem()
     {
-        Debug.Log("Searching for Item");
         //If I can look for a power-up AND I do not have a power-up
         if (!controller.player.Inventory.HasItem() && Time.time > itemLookWait)
         {
@@ -135,11 +136,9 @@ public class StateAISearch : AIState, IState
                 //IS there a power-up nearby?
                 if (spawner.HasItem() && Vector3.Distance(controller.agent.transform.position, spawner.transform.position) <= itemLookRadius)
                 {
-                    Debug.Log("Checking Spawners");
                     //THEN do a random roll to see if I want to go for it
                     if (Random.Range(0, controller.itemSearchChance.y) <= controller.itemSearchChance.x)
                     {
-                        Debug.Log("Item Found");
                         target = spawner.item.transform;
                         targetSpawner = spawner;
                         isFindingItem = true;//Yes I AM looking for a power-up thank you :D
@@ -147,7 +146,6 @@ public class StateAISearch : AIState, IState
                     }
                 }
             }
-            Debug.Log("No Item Found");
         }
     }
 

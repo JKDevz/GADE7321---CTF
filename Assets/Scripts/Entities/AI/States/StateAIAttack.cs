@@ -15,7 +15,6 @@ public class StateAIAttack : AIState, IState
         }
         else if (controller.player.Inventory.HasItem())
         {
-            controller.ResetItemUseWait();
             controller.player.Attacking.UseItem();
         }
 

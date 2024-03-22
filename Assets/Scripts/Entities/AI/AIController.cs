@@ -65,7 +65,7 @@ public class AIController : MonoBehaviour
         GameManager.onGameStateChanged -= UpdateGameState;
         player.onDamage -= OnDamage;
         GameManager.onRoundSetup -= OnRespawned;
-        player.Inventory.onItemPickup -= ResetItemUseWait;
+        player.Inventory.onItemPickup += ResetItemUseWait;
     }
 
     #endregion
@@ -85,6 +85,8 @@ public class AIController : MonoBehaviour
         stateSearch = new StateAISearch(this);
 
         currentState = stateSearch;
+
+        ResetItemUseWait();
     }
 
     private void Update()
@@ -202,8 +204,8 @@ public class AIController : MonoBehaviour
 
     public void ResetItemUseWait()
     {
-        Debug.Log("Reset Item use Wait Timer");
-        itemUseWait = itemUseCooldown + Random.Range(itemUseCooldown_Noise.x, itemUseCooldown_Noise.y);
+        Debug.Log("Reset Item use Wait Timer: " + itemUseWait);
+        itemUseWait = Time.time + itemUseCooldown + Random.Range(itemUseCooldown_Noise.x, itemUseCooldown_Noise.y);
     }
 
     private void ModifyStats()
